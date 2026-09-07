@@ -31,12 +31,12 @@ class DashboardController extends Controller
         | Upcoming Appointments
         |--------------------------------------------------------------------------
         |
-        | New appointments are created as "pending".
-        | Therefore we must include:
+        | IMPORTANT:
+        | The lawyer controller changes approved appointments to:
         |
-        | pending
-        | scheduled
-        | confirmed
+        |     status = approved
+        |
+        | Therefore "approved" must be included here.
         |
         */
         $appointments = $client->appointmentsAsClient()
@@ -46,13 +46,13 @@ class DashboardController extends Controller
             ])
             ->whereIn('status', [
                 'pending',
+                'approved',
                 'scheduled',
                 'confirmed',
             ])
             ->where(function ($query) {
                 $query
                     ->whereDate('appointment_date', '>', today())
-
                     ->orWhere(function ($query) {
                         $query
                             ->whereDate('appointment_date', today())
@@ -74,7 +74,7 @@ class DashboardController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Client Cases Query
+        | Client Cases
         |--------------------------------------------------------------------------
         */
         $clientCases = $client->casesAsClient();
@@ -85,7 +85,6 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
         $stats = [
-
             /*
             |--------------------------------------------------------------------------
             | Open Cases
@@ -101,34 +100,29 @@ class DashboardController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | Upcoming Appointments
+            | Upcoming Appointments Count
             |--------------------------------------------------------------------------
+            |
+            | "approved" is included because that is the status used
+            | when the lawyer approves an appointment.
+            |
             */
             'upcoming_appointments' => $client->appointmentsAsClient()
                 ->whereIn('status', [
                     'pending',
+                    'approved',
                     'scheduled',
                     'confirmed',
                 ])
                 ->where(function ($query) {
                     $query
-                        ->whereDate(
-                            'appointment_date',
-                            '>',
-                            today()
-                        )
-
+                        ->whereDate('appointment_date', '>', today())
                         ->orWhere(function ($query) {
                             $query
-                                ->whereDate(
-                                    'appointment_date',
-                                    today()
-                                )
+                                ->whereDate('appointment_date', today())
                                 ->where(function ($query) {
                                     $query
-                                        ->whereNull(
-                                            'appointment_time'
-                                        )
+                                        ->whereNull('appointment_time')
                                         ->orWhereTime(
                                             'appointment_time',
                                             '>=',
@@ -162,6 +156,11 @@ class DashboardController extends Controller
             )->count(),
         ];
 
+        /*
+        |--------------------------------------------------------------------------
+        | Client Dashboard View
+        |--------------------------------------------------------------------------
+        */
         return view(
             'client.dashboard',
             compact(

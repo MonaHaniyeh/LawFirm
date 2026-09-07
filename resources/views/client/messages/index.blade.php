@@ -106,7 +106,7 @@
             </h2>
 
             <p class="mt-1 text-xs text-[#77736b]">
-                One conversation is shown for each case.
+                Your conversations with your lawyers.
             </p>
 
         </div>
@@ -120,34 +120,50 @@
 
                     @php
 
-                        $latestMessage =
-                            $thread->latestMessage;
+                        $latestMessage = $thread->latestMessage;
 
                         $isUnread =
                             $latestMessage
-                            && $latestMessage->receiver_id === auth()->id()
+                            && (int) $latestMessage->receiver_id === (int) auth()->id()
                             && (bool) $latestMessage->is_new;
 
                     @endphp
 
 
+                    {{-- ================================================= --}}
+                    {{-- Conversation --}}
+                    {{-- ================================================= --}}
+
                     <a
-                        href="{{ route('client.cases.show', $thread->case) }}"
+                        href="{{ route('client.messages.show', $thread->latestMessage) }}"
                         class="block p-5 transition hover:bg-[#faf8f3]"
                     >
 
                         <div class="flex gap-4">
 
-                            {{-- Avatar --}}
-                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#151515] text-sm font-semibold text-white">
 
-                                {{ strtoupper(substr($thread->lawyer?->name ?? 'L', 0, 1)) }}
+                            {{-- Avatar --}}
+
+                            <div
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#151515] text-sm font-semibold text-white"
+                            >
+
+                                {{ strtoupper(
+                                    substr(
+                                        $thread->lawyer?->name ?? 'L',
+                                        0,
+                                        1
+                                    )
+                                ) }}
 
                             </div>
 
 
                             {{-- Content --}}
+
                             <div class="min-w-0 flex-1">
+
+                                {{-- Top row --}}
 
                                 <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
 
@@ -156,12 +172,17 @@
                                         <div class="flex flex-wrap items-center gap-2">
 
                                             <h3 class="break-words text-sm font-semibold text-[#151515]">
+
                                                 {{ $thread->lawyer?->name ?? 'Assigned Lawyer' }}
+
                                             </h3>
+
 
                                             @if($isUnread)
 
-                                                <span class="rounded-full bg-[#e9f1eb] px-2 py-0.5 text-[9px] font-medium text-[#52745a]">
+                                                <span
+                                                    class="rounded-full bg-[#e9f1eb] px-2 py-0.5 text-[9px] font-medium text-[#52745a]"
+                                                >
                                                     New
                                                 </span>
 
@@ -169,8 +190,11 @@
 
                                         </div>
 
+
                                         <p class="mt-1 break-words text-[11px] text-[#8b7041]">
+
                                             {{ $thread->case_number }}
+
                                         </p>
 
                                     </div>
@@ -179,7 +203,9 @@
                                     @if($latestMessage)
 
                                         <span class="shrink-0 text-[10px] text-[#99958d]">
+
                                             {{ $latestMessage->created_at?->diffForHumans() }}
+
                                         </span>
 
                                     @endif
@@ -187,34 +213,46 @@
                                 </div>
 
 
+                                {{-- Message preview --}}
+
                                 @if($latestMessage)
 
                                     @if($latestMessage->subject)
 
                                         <p class="mt-3 break-words text-xs font-medium text-[#151515]">
+
                                             {{ $latestMessage->subject }}
+
                                         </p>
 
                                     @endif
 
 
                                     <p class="mt-1 line-clamp-2 break-words text-xs leading-5 text-[#77736b]">
+
                                         {{ $latestMessage->content }}
+
                                     </p>
 
                                 @else
 
                                     <p class="mt-3 text-xs italic text-[#99958d]">
+
                                         No messages yet. Start a conversation with your lawyer.
+
                                     </p>
 
                                 @endif
 
 
+                                {{-- Bottom information --}}
+
                                 <div class="mt-3 flex items-center gap-2">
 
                                     <span class="text-[10px] font-medium text-[#8b7041]">
+
                                         {{ $thread->case?->case_type ?? 'Legal Case' }}
+
                                     </span>
 
                                     <span class="text-[#c9c3b8]">
@@ -222,7 +260,9 @@
                                     </span>
 
                                     <span class="text-[10px] text-[#99958d]">
-                                        Open conversation →
+
+                                        View conversation →
+
                                     </span>
 
                                 </div>
@@ -237,21 +277,33 @@
 
             </div>
 
+
         @else
+
+            {{-- ================================================= --}}
+            {{-- Empty State --}}
+            {{-- ================================================= --}}
 
             <div class="px-5 py-14 text-center">
 
-                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#f5f1e8] text-[#8b7041]">
+                <div
+                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#f5f1e8] text-[#8b7041]"
+                >
                     ✉
                 </div>
+
 
                 <h3 class="mt-4 text-sm font-semibold text-[#151515]">
                     No messages yet
                 </h3>
 
+
                 <p class="mx-auto mt-2 max-w-sm text-xs leading-5 text-[#77736b]">
-                    Once you have a case and communicate with your lawyer, your conversations will appear here.
+
+                    Once your lawyer sends you a message, your conversation will appear here.
+
                 </p>
+
 
                 <a
                     href="{{ route('client.cases.index') }}"

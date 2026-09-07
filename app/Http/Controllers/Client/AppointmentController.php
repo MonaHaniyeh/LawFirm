@@ -27,7 +27,6 @@ class AppointmentController extends Controller
             ->orderByDesc('start_date')
             ->get();
 
-
         /*
         |--------------------------------------------------------------------------
         | Client's Appointments
@@ -42,18 +41,19 @@ class AppointmentController extends Controller
             ->orderByDesc('appointment_time')
             ->get();
 
-
         /*
         |--------------------------------------------------------------------------
         | Return Appointments Page
         |--------------------------------------------------------------------------
         */
-        return view('client.appointments.index', compact(
-            'cases',
-            'appointments'
-        ));
+        return view(
+            'client.appointments.index',
+            compact(
+                'cases',
+                'appointments'
+            )
+        );
     }
-
 
     /**
      * Store a new appointment request.
@@ -90,7 +90,6 @@ class AppointmentController extends Controller
             ],
         ]);
 
-
         /*
         |--------------------------------------------------------------------------
         | Make Sure The Case Belongs To This Client
@@ -100,7 +99,6 @@ class AppointmentController extends Controller
             ->where('client_id', $user->id)
             ->firstOrFail();
 
-
         /*
         |--------------------------------------------------------------------------
         | Create Appointment
@@ -108,21 +106,41 @@ class AppointmentController extends Controller
         */
         Appointment::create([
             'client_id' => $user->id,
+
             'lawyer_id' => $case->lawyer_id,
+
             'case_id' => $case->id,
 
             'appointment_date' => $validated['date'],
+
             'appointment_time' => $validated['time'],
 
-            'location' => $validated['location'],
+            /*
+            | IMPORTANT:
+            | The Appointment model/database uses meeting_location,
+            | not location.
+            */
+            'meeting_location' => $validated['location'],
+
             'note' => $validated['note'] ?? null,
 
+            /*
+            | New appointment requests start as pending.
+            | The lawyer can approve/reject them.
+            */
             'status' => 'pending',
         ]);
 
-
+        /*
+        |--------------------------------------------------------------------------
+        | Redirect Back To Client Appointments
+        |--------------------------------------------------------------------------
+        */
         return redirect()
             ->route('client.appointments')
-            ->with('success', 'Your appointment request has been submitted successfully.');
+            ->with(
+                'success',
+                'Your appointment request has been submitted successfully.'
+            );
     }
 }

@@ -3,7 +3,9 @@
 @section('title', $case->case_number . ' | Case Details')
 
 @push('styles')
+
 <style>
+
     /* =====================================================
        CASE DETAILS PAGE
     ===================================================== */
@@ -19,6 +21,7 @@
 
     .breadcrumb a {
         transition: color .2s ease;
+        text-decoration: none;
     }
 
     .breadcrumb a:hover {
@@ -32,6 +35,7 @@
     .breadcrumb-current {
         color: #625f59;
     }
+
 
     /* =====================================================
        PAGE HEADER
@@ -97,6 +101,7 @@
         color: #bbb5aa;
     }
 
+
     /* =====================================================
        STATUS
     ===================================================== */
@@ -142,6 +147,7 @@
         background: var(--danger-bg);
     }
 
+
     /* =====================================================
        EDIT BUTTON
     ===================================================== */
@@ -157,6 +163,7 @@
         color: white;
         font-size: 10px;
         font-weight: 700;
+        text-decoration: none;
         transition:
             background .2s ease,
             transform .2s ease;
@@ -171,6 +178,7 @@
         width: 14px;
         height: 14px;
     }
+
 
     /* =====================================================
        TWO COLUMN LAYOUT
@@ -191,6 +199,7 @@
         flex-direction: column;
         gap: 20px;
     }
+
 
     /* =====================================================
        PANELS
@@ -224,6 +233,7 @@
         font-size: 10px;
     }
 
+
     /* =====================================================
        DESCRIPTION
     ===================================================== */
@@ -254,6 +264,7 @@
         font-size: 12px;
         font-style: italic;
     }
+
 
     /* =====================================================
        DOCUMENTS
@@ -301,10 +312,71 @@
     }
 
     .upload-description {
-        margin: 5px 0 13px;
+        margin: 5px 0 18px;
         color: #99948b;
         font-size: 9px;
         line-height: 1.5;
+    }
+
+
+    /* =====================================================
+       DOCUMENT TITLE FIELD
+    ===================================================== */
+
+    .document-title-field {
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto 16px;
+        text-align: left;
+    }
+
+    .document-title-label {
+        display: block;
+        margin-bottom: 6px;
+        color: #777269;
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+    }
+
+    .document-title-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 12px;
+        border: 1px solid #d8d2c8;
+        border-radius: 4px;
+        outline: none;
+        background: white;
+        color: #44413c;
+        font-family: inherit;
+        font-size: 11px;
+        transition:
+            border-color .2s ease,
+            box-shadow .2s ease;
+    }
+
+    .document-title-input::placeholder {
+        color: #aaa59c;
+    }
+
+    .document-title-input:focus {
+        border-color: var(--gold);
+        box-shadow:
+            0 0 0 3px
+            rgba(182,154,104,.08);
+    }
+
+
+    /* =====================================================
+       CHOOSE FILE
+    ===================================================== */
+
+    .document-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
     }
 
     .file-input {
@@ -315,7 +387,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 8px 13px;
+        padding: 9px 16px;
         border: 1px solid #d5d0c7;
         border-radius: 4px;
         background: white;
@@ -325,28 +397,31 @@
         cursor: pointer;
         transition:
             border-color .2s ease,
-            color .2s ease;
+            color .2s ease,
+            background .2s ease,
+            transform .2s ease;
     }
 
     .choose-file:hover {
         border-color: var(--gold);
         color: var(--gold-dark);
+        background: #fffdf9;
+        transform: translateY(-1px);
     }
 
+
+    /* =====================================================
+       HIDE ANY SUBMIT BUTTON
+    ===================================================== */
+
     .document-submit {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin-left: 5px;
-        padding: 8px 13px;
-        border: 1px solid var(--charcoal);
-        border-radius: 4px;
-        background: var(--charcoal);
-        color: white;
-        font-size: 9px;
-        font-weight: 700;
-        cursor: pointer;
+        display: none !important;
     }
+
+
+    /* =====================================================
+       DOCUMENT LIST
+    ===================================================== */
 
     .document-list {
         border-top: 1px solid #efede8;
@@ -405,6 +480,7 @@
         color: var(--gold-dark);
         font-size: 10px;
         font-weight: 600;
+        text-decoration: none;
         white-space: nowrap;
         transition: color .2s ease;
     }
@@ -419,6 +495,7 @@
         text-align: center;
         font-size: 11px;
     }
+
 
     /* =====================================================
        MESSAGES
@@ -551,6 +628,7 @@
         line-height: 1.6;
     }
 
+
     /* =====================================================
        MESSAGE COMPOSER
     ===================================================== */
@@ -624,6 +702,7 @@
         height: 14px;
     }
 
+
     /* =====================================================
        ALERTS
     ===================================================== */
@@ -647,19 +726,24 @@
         color: #8c4844;
     }
 
+
     /* =====================================================
        RESPONSIVE
     ===================================================== */
 
     @media (max-width: 1150px) {
+
         .case-layout {
             grid-template-columns:
                 minmax(0, 1.2fr)
                 minmax(320px, .8fr);
         }
+
     }
 
+
     @media (max-width: 900px) {
+
         .page-header {
             display: block;
         }
@@ -675,9 +759,12 @@
         .messages-panel {
             min-height: 550px;
         }
+
     }
 
+
     @media (max-width: 600px) {
+
         .breadcrumb {
             margin-bottom: 20px;
         }
@@ -695,9 +782,16 @@
             margin-right: 15px;
         }
 
-        .document-submit {
-            margin-top: 7px;
-            margin-left: 0;
+        .document-actions {
+            width: 100%;
+        }
+
+        .choose-file {
+            min-width: 120px;
+        }
+
+        .document-title-field {
+            max-width: 100%;
         }
 
         .message-content {
@@ -712,14 +806,28 @@
         .send-button {
             width: 100%;
         }
+
+        .document-row {
+            align-items: flex-start;
+        }
+
+        .document-download {
+            font-size: 9px;
+        }
+
     }
+
 </style>
+
 @endpush
 
 
 @section('content')
 
-    {{-- Breadcrumb --}}
+    {{-- =====================================================
+         BREADCRUMB
+    ===================================================== --}}
+
     <div class="breadcrumb">
 
         <a href="{{ route('lawyer.cases.index') }}">
@@ -737,21 +845,53 @@
     </div>
 
 
-    {{-- Flash Messages --}}
+    {{-- =====================================================
+         FLASH MESSAGES
+    ===================================================== --}}
+
     @if(session('success'))
+
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
+
     @endif
 
+
     @if(session('error'))
+
         <div class="alert alert-error">
             {{ session('error') }}
         </div>
+
     @endif
 
 
-    {{-- Page Header --}}
+    {{-- =====================================================
+         VALIDATION ERRORS
+    ===================================================== --}}
+
+    @if($errors->any())
+
+        <div class="alert alert-error">
+
+            @foreach($errors->all() as $error)
+
+                <div>
+                    {{ $error }}
+                </div>
+
+            @endforeach
+
+        </div>
+
+    @endif
+
+
+    {{-- =====================================================
+         PAGE HEADER
+    ===================================================== --}}
+
     <header class="page-header">
 
         <div>
@@ -779,44 +919,63 @@
             <div class="header-meta">
 
                 <span>
+
                     Opened
+
                     {{ $case->created_at
                         ? $case->created_at->format('M d, Y')
                         : '—'
                     }}
+
                 </span>
+
 
                 <span class="meta-separator">
                     ·
                 </span>
+
 
                 <span>
+
                     Client:
+
                     {{ $case->client?->name ?? '—' }}
+
                 </span>
+
 
                 <span class="meta-separator">
                     ·
                 </span>
+
 
                 @php
                     $status = strtolower($case->status ?? '');
                 @endphp
 
+
                 <span class="status
+
                     @if(in_array($status, ['open', 'opened', 'active']))
                         status-open
+
                     @elseif(in_array($status, ['closed', 'completed']))
                         status-closed
+
                     @elseif(in_array($status, ['pending', 'in_progress']))
                         status-pending
+
                     @elseif($status === 'rejected')
                         status-rejected
+
                     @else
                         status-closed
                     @endif
+
                 ">
+
                     {{ str_replace('_', ' ', $case->status ?? 'Unknown') }}
+
                 </span>
 
             </div>
@@ -824,7 +983,8 @@
         </div>
 
 
-        {{-- Edit Case --}}
+        {{-- EDIT CASE --}}
+
         @if(Route::has('lawyer.cases.edit'))
 
             <a
@@ -837,6 +997,7 @@
                     viewBox="0 0 24 24"
                     fill="none"
                 >
+
                     <path
                         d="M12 20h9"
                         stroke="currentColor"
@@ -850,6 +1011,7 @@
                         stroke-width="1.5"
                         stroke-linejoin="round"
                     />
+
                 </svg>
 
                 Edit case
@@ -861,16 +1023,24 @@
     </header>
 
 
-    {{-- Case Layout --}}
+    {{-- =====================================================
+         CASE LAYOUT
+    ===================================================== --}}
+
     <div class="case-layout">
+
 
         {{-- =================================================
              LEFT COLUMN
         ================================================== --}}
+
         <div class="left-column">
 
 
-            {{-- Case Description --}}
+            {{-- =================================================
+                 CASE DESCRIPTION
+            ================================================== --}}
+
             <section class="panel">
 
                 <div class="panel-header">
@@ -896,6 +1066,7 @@
                         Matter description
                     </div>
 
+
                     @if($case->description)
 
                         <p class="description-text">
@@ -915,8 +1086,15 @@
             </section>
 
 
-            {{-- Documents --}}
+
+            {{-- =================================================
+                 DOCUMENTS
+            ================================================== --}}
+
             <section class="panel">
+
+
+                {{-- DOCUMENT HEADER --}}
 
                 <div class="panel-header">
 
@@ -932,28 +1110,43 @@
 
                     </div>
 
+
                     <div style="color:#928d84;font-size:10px;">
 
                         {{ $case->documents->count() }}
 
-                        {{ $case->documents->count() === 1 ? 'file' : 'files' }}
+                        {{ $case->documents->count() === 1
+                            ? 'file'
+                            : 'files'
+                        }}
 
                     </div>
 
                 </div>
 
 
-                {{-- Upload --}}
+
+                {{-- =================================================
+                     DOCUMENT UPLOAD
+                ================================================== --}}
+
                 @if(Route::has('lawyer.cases.documents.store'))
 
                     <form
-                        action="{{ route('lawyer.cases.documents.store', $case) }}"
+                        id="document-upload-form"
+                        action="{{ route(
+                            'lawyer.cases.documents.store',
+                            $case
+                        ) }}"
                         method="POST"
                         enctype="multipart/form-data"
                         class="document-upload"
                     >
 
                         @csrf
+
+
+                        {{-- UPLOAD ICON --}}
 
                         <div class="upload-icon">
 
@@ -995,38 +1188,71 @@
 
 
                         <p class="upload-description">
-                            PDF or DOCX · Maximum file size 10 MB
+                            Enter a title for the document, then choose your file.
+                            PDF or DOC/DOCX · Maximum file size 10 MB
                         </p>
 
 
-                        <label class="choose-file">
+                        {{-- =================================================
+                             DOCUMENT TITLE
+                        ================================================== --}}
 
-                            Choose file
+                        <div class="document-title-field">
+
+                            <label
+                                for="document-title"
+                                class="document-title-label"
+                            >
+                                Document title
+                            </label>
+
 
                             <input
-                                type="file"
-                                name="document"
-                                class="file-input"
-                                accept=".pdf,.doc,.docx"
+                                type="text"
+                                name="title"
+                                id="document-title"
+                                class="document-title-input"
+                                placeholder="e.g. Client Contract"
+                                value="{{ old('title') }}"
+                                maxlength="255"
                                 required
                             >
 
-                        </label>
+                        </div>
 
 
-                        <button
-                            type="submit"
-                            class="document-submit"
-                        >
-                            Upload
-                        </button>
+                        {{-- =================================================
+                             CHOOSE FILE
+                        ================================================== --}}
+
+                        <div class="document-actions">
+
+                            <label class="choose-file">
+
+                                Choose file
+
+                                <input
+                                    type="file"
+                                    name="document"
+                                    class="file-input"
+                                    accept=".pdf,.doc,.docx"
+                                    required
+                                >
+
+                            </label>
+
+                        </div>
 
                     </form>
 
                 @endif
 
 
-                {{-- Document List --}}
+
+                {{-- =================================================
+                     DOCUMENT LIST
+                ================================================== --}}
+
                 @if($case->documents->isNotEmpty())
 
                     <div class="document-list">
@@ -1034,6 +1260,9 @@
                         @foreach($case->documents as $document)
 
                             <div class="document-row">
+
+
+                                {{-- DOCUMENT ICON --}}
 
                                 <div class="document-icon">
 
@@ -1061,12 +1290,16 @@
                                 </div>
 
 
+
+                                {{-- DOCUMENT INFO --}}
+
                                 <div class="document-info">
 
                                     <div class="document-name">
 
                                         {{ $document->title
                                             ?? $document->name
+                                            ?? $document->original_name
                                             ?? 'Document'
                                         }}
 
@@ -1075,10 +1308,12 @@
 
                                     <div class="document-meta">
 
-                                        {{ $document->created_at
-                                            ? $document->created_at->format('M d, Y')
-                                            : ''
-                                        }}
+                                        @if($document->created_at)
+
+                                            {{ $document->created_at->format('M d, Y') }}
+
+                                        @endif
+
 
                                         @if($document->file_size)
 
@@ -1098,16 +1333,24 @@
                                 </div>
 
 
+
+                                {{-- DOWNLOAD --}}
+
                                 @if(Route::has('lawyer.documents.download'))
 
                                     <a
-                                        href="{{ route('lawyer.documents.download', $document) }}"
+                                        href="{{ route(
+                                            'lawyer.documents.download',
+                                            $document
+                                        ) }}"
                                         class="document-download"
                                     >
                                         Download
                                     </a>
 
-                                @elseif(Route::has('lawyer.cases.documents.download'))
+                                @elseif(Route::has(
+                                    'lawyer.cases.documents.download'
+                                ))
 
                                     <a
                                         href="{{ route(
@@ -1130,7 +1373,9 @@
                 @else
 
                     <div class="documents-empty">
+
                         No documents have been added to this case yet.
+
                     </div>
 
                 @endif
@@ -1140,15 +1385,18 @@
         </div>
 
 
+
         {{-- =================================================
              RIGHT COLUMN — MESSAGES
         ================================================== --}}
+
         <div class="right-column">
 
             <section class="panel messages-panel">
 
 
-                {{-- Message Header --}}
+                {{-- MESSAGE HEADER --}}
+
                 <div class="panel-header">
 
                     <div>
@@ -1158,8 +1406,11 @@
                         </h2>
 
                         <div class="panel-subtitle">
+
                             Conversation with
+
                             {{ $case->client?->name ?? 'client' }}
+
                         </div>
 
                     </div>
@@ -1167,7 +1418,9 @@
                 </div>
 
 
-                {{-- Message List --}}
+
+                {{-- MESSAGE LIST --}}
+
                 <div class="message-list">
 
                     @if($case->messages->isNotEmpty())
@@ -1175,13 +1428,19 @@
                         @foreach($case->messages as $message)
 
                             @php
+
                                 $isLawyerMessage =
-                                    $message->user_id === auth()->id();
+                                    (int) $message->user_id ===
+                                    (int) auth()->id();
+
                             @endphp
 
 
                             <div class="message
-                                {{ $isLawyerMessage ? 'lawyer' : 'client' }}
+                                {{ $isLawyerMessage
+                                    ? 'lawyer'
+                                    : 'client'
+                                }}
                             ">
 
                                 <div class="message-content">
@@ -1202,7 +1461,9 @@
 
 
                                     <div class="message-bubble">
+
                                         {{ $message->message }}
+
                                     </div>
 
 
@@ -1252,8 +1513,10 @@
 
 
                             <p class="messages-empty-text">
+
                                 Start the conversation with your client
                                 using the message box below.
+
                             </p>
 
                         </div>
@@ -1263,7 +1526,9 @@
                 </div>
 
 
-                {{-- Message Composer --}}
+
+                {{-- MESSAGE COMPOSER --}}
+
                 @if(Route::has('lawyer.messages.store'))
 
                     <div class="message-composer">
@@ -1278,6 +1543,7 @@
                         >
 
                             @csrf
+
 
                             <textarea
                                 name="message"
@@ -1329,5 +1595,72 @@
         </div>
 
     </div>
+
+
+    {{-- =====================================================
+         AUTO UPLOAD WHEN FILE IS SELECTED
+    ===================================================== --}}
+
+    @if(Route::has('lawyer.cases.documents.store'))
+
+        <script>
+
+            document.addEventListener('DOMContentLoaded', function () {
+
+                const fileInput = document.querySelector(
+                    '.document-upload .file-input'
+                );
+
+                const uploadForm = document.getElementById(
+                    'document-upload-form'
+                );
+
+                const titleInput = document.getElementById(
+                    'document-title'
+                );
+
+
+                if (!fileInput || !uploadForm || !titleInput) {
+                    return;
+                }
+
+
+                fileInput.addEventListener('change', function () {
+
+                    /*
+                     * Do not upload if the lawyer
+                     * has not entered a title.
+                     */
+
+                    if (!titleInput.value.trim()) {
+
+                        alert('Please enter a document title first.');
+
+                        this.value = '';
+
+                        titleInput.focus();
+
+                        return;
+                    }
+
+
+                    /*
+                     * File selected and title exists.
+                     * Submit the complete form.
+                     */
+
+                    if (this.files.length > 0) {
+
+                        uploadForm.submit();
+
+                    }
+
+                });
+
+            });
+
+        </script>
+
+    @endif
 
 @endsection

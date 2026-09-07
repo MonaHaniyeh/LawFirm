@@ -4,7 +4,12 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AccountController;
 
-// Admin
+/*
+|--------------------------------------------------------------------------
+| Admin
+|--------------------------------------------------------------------------
+*/
+
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\LawyerController;
 use App\Http\Controllers\Admin\ClientController;
@@ -14,20 +19,37 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminCaseController;
 use App\Http\Controllers\Admin\AdminAppointmentController;
 
-// Accountant
+/*
+|--------------------------------------------------------------------------
+| Accountant
+|--------------------------------------------------------------------------
+*/
+
 use App\Http\Controllers\Accountant\DashboardController as AccountantDashboardController;
 use App\Http\Controllers\Accountant\InvoiceController;
 
-// Lawyer
+/*
+|--------------------------------------------------------------------------
+| Lawyer
+|--------------------------------------------------------------------------
+*/
+
 use App\Http\Controllers\Lawyer\DashboardController as LawyerDashboardController;
 use App\Http\Controllers\Lawyer\AppointmentController;
 use App\Http\Controllers\Lawyer\CaseController;
 use App\Http\Controllers\Lawyer\MessageController;
+use App\Http\Controllers\Lawyer\CaseDocumentController;
 
-// Client
+/*
+|--------------------------------------------------------------------------
+| Client
+|--------------------------------------------------------------------------
+*/
+
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\Client\CaseController as ClientCaseController;
+use App\Http\Controllers\Client\MessageController as ClientMessageController;
 
 
 /*
@@ -45,7 +67,6 @@ Route::get('/', function () {
 |--------------------------------------------------------------------------
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
-|
 */
 
 Route::middleware(['auth', 'verified', 'role:admin'])
@@ -64,39 +85,77 @@ Route::middleware(['auth', 'verified', 'role:admin'])
             'index'
         ])->name('dashboard');
 
-        // users
-        Route::get('/users', [AdminUserController::class, 'index'])
-            ->name('users.index');
 
-        Route::get('/users/create', [AdminUserController::class, 'create'])
-            ->name('users.create');
+        /*
+        |--------------------------------------------------------------------------
+        | Users
+        |--------------------------------------------------------------------------
+        */
 
-        Route::post('/users', [AdminUserController::class, 'store'])
-            ->name('users.store');
+        Route::get('/users', [
+            AdminUserController::class,
+            'index'
+        ])->name('users.index');
 
-        Route::get('/users/{user}', [AdminUserController::class, 'show'])
-            ->name('users.show');
+        Route::get('/users/create', [
+            AdminUserController::class,
+            'create'
+        ])->name('users.create');
 
-        Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])
-            ->name('users.edit');
+        Route::post('/users', [
+            AdminUserController::class,
+            'store'
+        ])->name('users.store');
 
-        Route::put('/users/{user}', [AdminUserController::class, 'update'])
-            ->name('users.update');
+        Route::get('/users/{user}', [
+            AdminUserController::class,
+            'show'
+        ])->name('users.show');
 
-        Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])
-            ->name('users.destroy');
+        Route::get('/users/{user}/edit', [
+            AdminUserController::class,
+            'edit'
+        ])->name('users.edit');
 
-        // Deleted Users
-        Route::get('/users-deleted', [AdminUserController::class, 'deleted'])
-            ->name('users.deleted');
+        Route::put('/users/{user}', [
+            AdminUserController::class,
+            'update'
+        ])->name('users.update');
 
-        Route::patch('/users-deleted/{id}/restore', [AdminUserController::class, 'restore'])
-            ->name('users.restore');
+        Route::delete('/users/{user}', [
+            AdminUserController::class,
+            'destroy'
+        ])->name('users.destroy');
 
-        Route::delete('/users-deleted/{id}/force-delete', [AdminUserController::class, 'forceDelete'])
-            ->name('users.forceDelete');
 
-        //cases
+        /*
+        |--------------------------------------------------------------------------
+        | Deleted Users
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/users-deleted', [
+            AdminUserController::class,
+            'deleted'
+        ])->name('users.deleted');
+
+        Route::patch('/users-deleted/{id}/restore', [
+            AdminUserController::class,
+            'restore'
+        ])->name('users.restore');
+
+        Route::delete('/users-deleted/{id}/force-delete', [
+            AdminUserController::class,
+            'forceDelete'
+        ])->name('users.forceDelete');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cases
+        |--------------------------------------------------------------------------
+        */
+
         Route::get('/cases', [
             AdminCaseController::class,
             'index'
@@ -107,7 +166,13 @@ Route::middleware(['auth', 'verified', 'role:admin'])
             'show'
         ])->name('cases.show');
 
-        //appointment
+
+        /*
+        |--------------------------------------------------------------------------
+        | Appointments
+        |--------------------------------------------------------------------------
+        */
+
         Route::get('/appointments', [
             AdminAppointmentController::class,
             'index'
@@ -239,7 +304,6 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 |--------------------------------------------------------------------------
 | LAWYER ROUTES
 |--------------------------------------------------------------------------
-|
 */
 
 Route::middleware(['auth', 'verified', 'role:lawyer'])
@@ -249,7 +313,7 @@ Route::middleware(['auth', 'verified', 'role:lawyer'])
 
         /*
         |--------------------------------------------------------------------------
-        | Lawyer Dashboard
+        | Dashboard
         |--------------------------------------------------------------------------
         */
 
@@ -287,12 +351,10 @@ Route::middleware(['auth', 'verified', 'role:lawyer'])
         |--------------------------------------------------------------------------
         */
 
-        // Prevent direct GET access to the respond URL
         Route::get('/appointments/{appointment}/respond', function () {
             return redirect()->route('lawyer.appointments.index');
         })->name('appointments.respond.get');
 
-        // Approve / Reject appointment
         Route::post('/appointments/{appointment}/respond', [
             AppointmentController::class,
             'respond'
@@ -325,15 +387,29 @@ Route::middleware(['auth', 'verified', 'role:lawyer'])
             'update'
         ])->name('cases.update');
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Case Documents
+        |--------------------------------------------------------------------------
+        */
+
         Route::post('/cases/{case}/documents', [
             CaseController::class,
             'storeDocument'
         ])->name('cases.documents.store');
 
         Route::get('/cases/{case}/documents/{document}/download', [
-            CaseController::class,
-            'downloadDocument'
+            CaseDocumentController::class,
+            'download'
         ])->name('cases.documents.download');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Case Messages
+        |--------------------------------------------------------------------------
+        */
 
         Route::post('/cases/{case}/messages', [
             CaseController::class,
@@ -408,7 +484,6 @@ Route::middleware(['auth', 'verified', 'role:lawyer'])
 |--------------------------------------------------------------------------
 | CLIENT ROUTES
 |--------------------------------------------------------------------------
-|
 */
 
 Route::middleware(['auth', 'verified', 'role:client'])
@@ -437,7 +512,7 @@ Route::middleware(['auth', 'verified', 'role:client'])
         Route::get('/appointments', [
             ClientAppointmentController::class,
             'index'
-        ])->name('appointments.index');
+        ])->name('appointments');
 
         Route::post('/appointments', [
             ClientAppointmentController::class,
@@ -508,9 +583,19 @@ Route::middleware(['auth', 'verified', 'role:client'])
         */
 
         Route::get('/messages', [
-            MessageController::class,
+            ClientMessageController::class,
             'index'
-        ])->name('messages.index');
+        ])->name('messages');
+
+        Route::get('/messages/{message}', [
+            ClientMessageController::class,
+            'show'
+        ])->name('messages.show');
+
+        Route::post('/messages/{case}/reply', [
+            ClientMessageController::class,
+            'reply'
+        ])->name('messages.reply');
 
 
         /*
@@ -626,5 +711,6 @@ Route::middleware(['auth', 'verified', 'role:accountant'])
             'updatePassword'
         ])->name('password.update');
     });
+
 
 require __DIR__ . '/auth.php';
