@@ -570,8 +570,8 @@
 
 
                                 {{-- =================================================
-    CLIENT NOTE
-================================================== --}}
+                                CLIENT NOTE
+                            ================================================== --}}
                                 @if ($appointment->note)
                                     <div
                                         class="mt-4 w-full min-w-0 max-w-full overflow-hidden rounded-lg border border-[#e7e3db] bg-white px-4 py-3">
@@ -590,8 +590,8 @@
 
 
                                 {{-- =================================================
-    LAWYER RESPONSE
-================================================== --}}
+                                LAWYER RESPONSE
+                            ================================================== --}}
                                 @if ($appointment->response)
                                     <div
                                         class="mt-4 w-full min-w-0 max-w-full overflow-hidden rounded-lg border border-[#e4dccb] bg-[#f9f5ec] px-4 py-3">
@@ -608,35 +608,44 @@
                                     </div>
                                 @endif
 
-                                {{-- =================================================
+                            </div>
+                            {{-- /APPOINTMENT CARD --}}
+
+                        </div>
+                        {{-- /TIMELINE ITEM --}}
+
+                    @empty
+
+                        {{-- =================================================
                         EMPTY STATE
                     ================================================== --}}
-                                <div
-                                    class="flex min-h-[360px] flex-col items-center justify-center rounded-xl border border-dashed border-[#ddd8ce] bg-[#faf9f6] px-6 text-center">
+                        <div
+                            class="flex min-h-[360px] flex-col items-center justify-center rounded-xl border border-dashed border-[#ddd8ce] bg-[#faf9f6] px-6 text-center">
 
-                                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-white">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-white">
 
-                                        <svg class="h-6 w-6 text-[#b69a68]" fill="none" stroke="currentColor"
-                                            stroke-width="1.5" viewBox="0 0 24 24">
-                                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                                <svg class="h-6 w-6 text-[#b69a68]" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" viewBox="0 0 24 24">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
 
-                                            <path stroke-linecap="round" d="M16 2v4M8 2v4M3 10h18" />
-                                        </svg>
+                                    <path stroke-linecap="round" d="M16 2v4M8 2v4M3 10h18" />
+                                </svg>
 
-                                    </div>
-
-
-                                    <h3 class="mt-5 font-serif text-xl font-semibold text-[#151515]">
-                                        No appointments yet
-                                    </h3>
+                            </div>
 
 
-                                    <p class="mt-2 max-w-sm text-xs leading-5 text-[#7d7b76]">
-                                        Your scheduled meetings and appointment requests
-                                        will appear here.
-                                    </p>
+                            <h3 class="mt-5 font-serif text-xl font-semibold text-[#151515]">
+                                No appointments yet
+                            </h3>
 
-                                </div>
+
+                            <p class="mt-2 max-w-sm text-xs leading-5 text-[#7d7b76]">
+                                Your scheduled meetings and appointment requests
+                                will appear here.
+                            </p>
+
+                        </div>
+
                     @endforelse
 
                 </div>
