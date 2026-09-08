@@ -7,6 +7,7 @@ use App\Jobs\SendAppointmentApprovedMail;
 use App\Jobs\SendAppointmentRejectedMail;
 use App\Models\Appointment;
 use App\Models\CaseFile;
+use App\Notifications\NewAppointmentNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -96,7 +97,7 @@ class AppointmentController extends Controller
         $clientId = $case->client_id;
 
         // Create appointment.
-        Appointment::create([
+        $appointment = Appointment::create([
             'case_id' => $case->id,
             'client_id' => $clientId,
             'lawyer_id' => Auth::id(),
@@ -106,6 +107,32 @@ class AppointmentController extends Controller
             'note' => $data['note'] ?? ($data['reason'] ?? null),
             'status' => 'pending',
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | SEND NOTIFICATION TO CLIENT
+        |--------------------------------------------------------------------------
+        |
+        | The appointment has been created by the lawyer.
+        | Notify the client through:
+        |
+        | 1. Database notification
+        | 2. Email notification
+        |
+        | Because NewAppointmentNotification implements ShouldQueue,
+        | Laravel will place the notification into the jobs table.
+        |
+        */
+
+        $appointment->load([
+            'client',
+            'lawyer',
+            'case',
+        ]);
+
+        $appointment->client->notify(
+            new NewAppointmentNotification($appointment)
+        );
 
         return redirect()
             ->route('lawyer.appointments.index')
@@ -153,6 +180,7 @@ class AppointmentController extends Controller
         */
 
         if ($data['status'] === 'approved') {
+
             SendAppointmentApprovedMail::dispatch($appointment);
 
             return redirect()
@@ -170,6 +198,7 @@ class AppointmentController extends Controller
         */
 
         if ($data['status'] === 'rejected') {
+
             SendAppointmentRejectedMail::dispatch($appointment);
 
             return redirect()

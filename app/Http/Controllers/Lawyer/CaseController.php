@@ -7,6 +7,8 @@ use App\Models\CaseFile;
 use App\Models\Document;
 use App\Models\Message;
 use App\Models\User;
+use App\Notifications\CaseUpdatedNotification;
+use App\Notifications\DocumentUploadedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -30,12 +32,18 @@ class CaseController extends Controller
 
         // Filter by case type
         if ($request->filled('case_type')) {
-            $casesQuery->where('case_type', $request->case_type);
+            $casesQuery->where(
+                'case_type',
+                $request->case_type
+            );
         }
 
         // Filter by status
         if ($request->filled('status')) {
-            $casesQuery->where('status', $request->status);
+            $casesQuery->where(
+                'status',
+                $request->status
+            );
         }
 
         // Search
@@ -43,11 +51,28 @@ class CaseController extends Controller
             $search = $request->search;
 
             $casesQuery->where(function ($query) use ($search) {
-                $query->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
+                $query->where(
+                    'title',
+                    'like',
+                    "%{$search}%"
+                )
+                    ->orWhere(
+                        'description',
+                        'like',
+                        "%{$search}%"
+                    )
                     ->orWhereHas('client', function ($clientQuery) use ($search) {
-                        $clientQuery->where('name', 'like', "%{$search}%")
-                            ->orWhere('email', 'like', "%{$search}%");
+                        $clientQuery
+                            ->where(
+                                'name',
+                                'like',
+                                "%{$search}%"
+                            )
+                            ->orWhere(
+                                'email',
+                                'like',
+                                "%{$search}%"
+                            );
                     });
             });
         }
@@ -57,8 +82,9 @@ class CaseController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        /*
+        /**
          * Get the case types used by this lawyer.
+         *
          * This is required by lawyer/cases/index.blade.php
          */
         $caseTypes = $lawyer->casesAsLawyer()
@@ -68,10 +94,13 @@ class CaseController extends Controller
             ->orderBy('case_type')
             ->pluck('case_type');
 
-        return view('lawyer.cases.index', compact(
-            'cases',
-            'caseTypes'
-        ));
+        return view(
+            'lawyer.cases.index',
+            compact(
+                'cases',
+                'caseTypes'
+            )
+        );
     }
 
     /**
@@ -87,7 +116,10 @@ class CaseController extends Controller
             'messages.sender',
         ]);
 
-        return view('lawyer.cases.show', compact('case'));
+        return view(
+            'lawyer.cases.show',
+            compact('case')
+        );
     }
 
     /**
@@ -97,14 +129,19 @@ class CaseController extends Controller
     {
         Gate::authorize('update', $case);
 
-        return view('lawyer.cases.edit', compact('case'));
+        return view(
+            'lawyer.cases.edit',
+            compact('case')
+        );
     }
 
     /**
      * Update a case.
      */
-    public function update(Request $request, CaseFile $case)
-    {
+    public function update(
+        Request $request,
+        CaseFile $case
+    ) {
         Gate::authorize('update', $case);
 
         $data = $request->validate([
@@ -113,7 +150,6 @@ class CaseController extends Controller
                 'string',
                 'min:10',
             ],
-
             'status' => [
                 'required',
                 Rule::in([
@@ -121,7 +157,6 @@ class CaseController extends Controller
                     'closed',
                 ]),
             ],
-
             'end_date' => [
                 'nullable',
                 'date',
@@ -129,7 +164,31 @@ class CaseController extends Controller
             ],
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Update Case
+        |--------------------------------------------------------------------------
+        */
         $case->update($data);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Load Client
+        |--------------------------------------------------------------------------
+        */
+        $case->load([
+            'client',
+            'lawyer',
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Notify Client
+        |--------------------------------------------------------------------------
+        */
+        $case->client->notify(
+            new CaseUpdatedNotification($case)
+        );
 
         return back()->with(
             'status',
@@ -152,7 +211,6 @@ class CaseController extends Controller
                 'string',
                 'max:150',
             ],
-
             'content' => [
                 'required',
                 'string',
@@ -190,7 +248,6 @@ class CaseController extends Controller
                 'string',
                 'max:150',
             ],
-
             'document' => [
                 'required',
                 'file',
@@ -199,6 +256,11 @@ class CaseController extends Controller
             ],
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Store File
+        |--------------------------------------------------------------------------
+        */
         $file = $request->file('document');
 
         $path = $file->store(
@@ -206,7 +268,12 @@ class CaseController extends Controller
             'private'
         );
 
-        Document::create([
+        /*
+        |--------------------------------------------------------------------------
+        | Create Document
+        |--------------------------------------------------------------------------
+        */
+        $document = Document::create([
             'case_id' => $case->id,
             'uploaded_by' => Auth::id(),
             'title' => $data['title'],
@@ -214,6 +281,40 @@ class CaseController extends Controller
             'mime_type' => $file->getClientMimeType(),
             'size_bytes' => $file->getSize(),
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Load Relationships
+        |--------------------------------------------------------------------------
+        |
+        | The notification needs the case and uploader information.
+        |
+        */
+        $document->load([
+            'case',
+            'uploader',
+        ]);
+
+        $case->load([
+            'client',
+            'lawyer',
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Notify Client
+        |--------------------------------------------------------------------------
+        |
+        | Lawyer uploaded the document.
+        | Therefore, the client who owns the case receives:
+        |
+        | 1. Database notification
+        | 2. Email notification
+        |
+        */
+        $case->client->notify(
+            new DocumentUploadedNotification($document)
+        );
 
         return back()->with(
             'status',
@@ -224,9 +325,10 @@ class CaseController extends Controller
     /**
      * Download a case document.
      */
-
-    public function downloadDocument(CaseFile $case, Document $document)
-    {
+    public function downloadDocument(
+        CaseFile $case,
+        Document $document
+    ) {
         Gate::authorize('participate', $case);
 
         abort_unless(
