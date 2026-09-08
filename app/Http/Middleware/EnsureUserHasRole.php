@@ -7,47 +7,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Restricts a route group to one or more roles.
- *
- * Registered in bootstrap/app.php (Laravel 11+) as:
- *   $middleware->alias(['role' => \App\Http\Middleware\EnsureUserHasRole::class]);
- *
- * Used in routes as:
- *   ->middleware('role:client')
- *   ->middleware('role:admin,accountant')   // comma-separated = "any of these"
- */
 class EnsureUserHasRole
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     * @param  string  ...$roles  One or more roles allowed to pass through.
-     */
-    public function handle(Request $request, Closure $next, string ...$roles): Response
-    {
+    /** * Handle an incoming request. * * Usage: * * ->middleware('role:client') * * ->middleware('role:admin,accountant') * * Multiple roles are treated as "any of these roles". */ public function handle(Request $request, Closure $next, string ...$roles): Response
+    { /* |-------------------------------------------------------------------------- | CHECK AUTHENTICATION |-------------------------------------------------------------------------- | | If the user is not authenticated, show the custom 404 page. | HTTP status will still be 404. | */
         $user = $request->user();
-
-        abort_unless($user, 403, 'You must be signed in to access this page.');
-
-        // The user's role isn't one of the roles this route group allows.
-        abort_unless(
-            in_array($user->role, $roles, true),
-            403,
-            'You do not have access to this area.'
-        );
-
-
+        if (!$user) {
+            return response()->view('errors.404', [], 404);
+        } /* |-------------------------------------------------------------------------- | CHECK USER ROLE |-------------------------------------------------------------------------- | | If the authenticated user's role is not allowed, | show exactly the same 404 page. | | This prevents revealing that the requested route exists. | */
+        if (!in_array($user->role, $roles, true)) {
+            return response()->view('errors.404', [], 404);
+        } /* |-------------------------------------------------------------------------- | CHECK BANNED CLIENT |-------------------------------------------------------------------------- | | If the client is banned: | | 1. Logout the user. | 2. Invalidate the session. | 3. Regenerate the CSRF token. | 4. Display the generic 404 page. | */
         if ($user->role === 'client' && $user->status === 'banned') {
             Auth::guard('web')->logout();
-
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-
-            abort(403, 'This account has been suspended. Contact the firm for assistance.');
-        }
-
+            return response()->view('errors.404', [], 404);
+        } /* |-------------------------------------------------------------------------- | ACCESS GRANTED |-------------------------------------------------------------------------- */
         return $next($request);
     }
 }
