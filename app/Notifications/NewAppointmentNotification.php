@@ -29,8 +29,8 @@ class NewAppointmentNotification extends Notification implements ShouldQueue
     /**
      * Notification channels.
      *
-     * Database = notification appears inside the application.
-     * Mail = notification is sent to Mailpit.
+     * database = notification inside the application
+     * mail     = email notification sent to Mailpit
      */
     public function via(object $notifiable): array
     {
@@ -49,8 +49,10 @@ class NewAppointmentNotification extends Notification implements ShouldQueue
             'type' => 'new_appointment',
             'title' => 'New Appointment',
             'message' => 'You have received a new appointment request.',
+
             'appointment_id' => $this->appointment->id,
             'case_id' => $this->appointment->case_id,
+
             'date' => $this->appointment->appointment_date,
             'time' => $this->appointment->appointment_time,
         ];
@@ -58,21 +60,106 @@ class NewAppointmentNotification extends Notification implements ShouldQueue
 
     /**
      * Email notification.
+     *
+     * Uses the custom LawFirm Blade email view.
      */
     public function toMail(object $notifiable): MailMessage
     {
         $appointment = $this->appointment;
 
+        /*
+        |--------------------------------------------------------------------------
+        | Determine the URL based on the recipient role.
+        |--------------------------------------------------------------------------
+        |
+        | Lawyer → Lawyer appointments
+        | Client → Client appointments
+        |
+        */
+
+        if ($notifiable->role === 'lawyer') {
+            $appointmentUrl = url('/lawyer/appointments');
+        } else {
+            $appointmentUrl = url('/client/appointments');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Custom LawFirm Email
+        |--------------------------------------------------------------------------
+        */
+
         return (new MailMessage)
-            ->subject('New Appointment Request - LawFirm')
-            ->greeting('Hello ' . $notifiable->name . ',')
-            ->line('You have received a new appointment request.')
-            ->line('Appointment Date: ' . $appointment->appointment_date)
-            ->line('Appointment Time: ' . $appointment->appointment_time)
-            ->line('Status: Pending')
-            ->action('View Appointments',
-                url('/lawyer/appointments')
-            )->line('Please log in to your LawFirm account to review the appointment.');
+            ->subject('New Appointment | LawFirm')
+            ->view('emails.lawfirm-notification', [
+
+                /*
+                |--------------------------------------------------------------------------
+                | Email subject
+                |--------------------------------------------------------------------------
+                */
+                'subject' => 'New Appointment | LawFirm',
+
+                /*
+                |--------------------------------------------------------------------------
+                | Category
+                |--------------------------------------------------------------------------
+                */
+                'type' => 'Appointments',
+
+                /*
+                |--------------------------------------------------------------------------
+                | Main heading
+                |--------------------------------------------------------------------------
+                */
+                'heading' => 'New Appointment Scheduled',
+
+                /*
+                |--------------------------------------------------------------------------
+                | Recipient greeting
+                |--------------------------------------------------------------------------
+                */
+                'greeting' => 'Hello ' . ($notifiable->name ?? 'User') . ',',
+
+                /*
+                |--------------------------------------------------------------------------
+                | Main message
+                |--------------------------------------------------------------------------
+                */
+                'message' =>
+                    'You have received a new appointment request through the LawFirm system.',
+
+                /*
+                |--------------------------------------------------------------------------
+                | Appointment information
+                |--------------------------------------------------------------------------
+                */
+                'details' => [
+
+                    'Date' =>
+                        $appointment->appointment_date ?? 'N/A',
+
+                    'Time' =>
+                        $appointment->appointment_time ?? 'N/A',
+
+                    'Status' =>
+                        'Pending',
+                ],
+
+                /*
+                |--------------------------------------------------------------------------
+                | Button URL
+                |--------------------------------------------------------------------------
+                */
+                'actionUrl' => $appointmentUrl,
+
+                /*
+                |--------------------------------------------------------------------------
+                | Button text
+                |--------------------------------------------------------------------------
+                */
+                'actionText' => 'VIEW APPOINTMENT',
+            ]);
     }
 
     /**
@@ -82,9 +169,14 @@ class NewAppointmentNotification extends Notification implements ShouldQueue
     {
         return [
             'type' => 'new_appointment',
+
             'title' => 'New Appointment',
-            'message' => 'You have received a new appointment request.',
-            'appointment_id' => $this->appointment->id,
+
+            'message' =>
+                'You have received a new appointment request.',
+
+            'appointment_id' =>
+                $this->appointment->id,
         ];
     }
 }

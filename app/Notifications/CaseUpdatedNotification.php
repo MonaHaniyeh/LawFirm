@@ -58,23 +58,36 @@ class NewAppointmentNotification extends Notification implements ShouldQueue
 
     /**
      * Email notification.
+     *
+     * Uses the custom LawFirm Blade email view.
      */
     public function toMail(object $notifiable): MailMessage
     {
         $appointment = $this->appointment;
 
         return (new MailMessage)
-            ->subject('New Appointment Request - LawFirm')
-            ->greeting('Hello ' . $notifiable->name . ',')
-            ->line('You have received a new appointment request.')
-            ->line('Appointment Date: ' . $appointment->appointment_date)
-            ->line('Appointment Time: ' . $appointment->appointment_time)
-            ->line('Status: Pending')
-            ->action(
-                'View Appointments',
-                url('/lawyer/appointments')
-            )
-            ->line('Please log in to your LawFirm account to review the appointment.');
+            ->subject('New Appointment | LawFirm')
+            ->view('emails.lawfirm-notification', [
+                'subject' => 'New Appointment | LawFirm',
+
+                'type' => 'Appointments',
+
+                'heading' => 'New Appointment Scheduled',
+
+                'greeting' => 'Hello ' . $notifiable->name . ',',
+
+                'message' => 'You have received a new appointment request through the LawFirm system.',
+
+                'details' => [
+                    'Date' => $appointment->appointment_date,
+                    'Time' => $appointment->appointment_time,
+                    'Status' => 'Pending',
+                ],
+
+                'actionUrl' => url('/lawyer/appointments'),
+
+                'actionText' => 'VIEW APPOINTMENT',
+            ]);
     }
 
     /**

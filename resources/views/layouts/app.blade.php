@@ -967,6 +967,8 @@
 
 <body>
 
+    @include('components.flash-notifications')
+
     <div class="page">
 
         {{-- =====================================================
