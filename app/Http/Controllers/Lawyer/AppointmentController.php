@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Lawyer;
 
 use App\Http\Controllers\Controller;
@@ -6,7 +7,7 @@ use App\Jobs\SendAppointmentApprovedMail;
 use App\Jobs\SendAppointmentRejectedMail;
 use App\Models\Appointment;
 use App\Models\CaseFile;
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
@@ -116,18 +117,20 @@ class AppointmentController extends Controller
 
     /**
      * Approve or reject an appointment.
+     *
+     * This endpoint uses POST.
      */
     public function respond(
         Request $request,
         Appointment $appointment
     ) {
-        // Only the lawyer assigned to the appointment
-        // can approve or reject it.
+        // Make sure this appointment belongs to the logged-in lawyer.
         abort_unless(
             (int) $appointment->lawyer_id === (int) Auth::id(),
             403
         );
 
+        // Validate the requested action.
         $data = $request->validate([
             'status' => [
                 'required',
@@ -140,6 +143,9 @@ class AppointmentController extends Controller
             'status' => $data['status'],
         ]);
 
+        // Refresh the appointment with the new status.
+        $appointment->refresh();
+
         /*
         |--------------------------------------------------------------------------
         | APPROVED
@@ -147,11 +153,7 @@ class AppointmentController extends Controller
         */
 
         if ($data['status'] === 'approved') {
-
-            // Send approved email through the database queue.
-            SendAppointmentApprovedMail::dispatch(
-                $appointment
-            );
+            SendAppointmentApprovedMail::dispatch($appointment);
 
             return redirect()
                 ->route('lawyer.appointments.index')
@@ -168,11 +170,7 @@ class AppointmentController extends Controller
         */
 
         if ($data['status'] === 'rejected') {
-
-            // Send rejected email through the database queue.
-            SendAppointmentRejectedMail::dispatch(
-                $appointment
-            );
+            SendAppointmentRejectedMail::dispatch($appointment);
 
             return redirect()
                 ->route('lawyer.appointments.index')
@@ -182,6 +180,7 @@ class AppointmentController extends Controller
                 );
         }
 
+        // Fallback.
         return redirect()
             ->route('lawyer.appointments.index');
     }

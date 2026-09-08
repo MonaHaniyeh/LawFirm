@@ -231,15 +231,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/billing', [
-            BillingController::class,
-            'index'
-        ])->name('billing.index');
+        Route::get('/billing', [BillingController::class, 'index'])
+            ->name('billing.index');
 
-        Route::get('/invoices/{invoice}', [
-            BillingController::class,
-            'showInvoice'
-        ])->name('billing.show');
+        Route::get('/billing/{invoice}', [BillingController::class, 'show'])
+            ->name('billing.show');
 
 
         /*
@@ -299,7 +295,6 @@ Route::middleware(['auth', 'verified', 'role:admin'])
     });
 
 
-
 /*
 |--------------------------------------------------------------------------
 | LAWYER ROUTES
@@ -329,16 +324,21 @@ Route::middleware(['auth', 'verified', 'role:lawyer'])
         |--------------------------------------------------------------------------
         */
 
+        // Appointment list
         Route::get('/appointments', [
             AppointmentController::class,
             'index'
         ])->name('appointments.index');
 
+
+        // Schedule appointment page
         Route::get('/appointments/schedule', [
             AppointmentController::class,
             'schedule'
         ])->name('appointments.schedule');
 
+
+        // Create appointment
         Route::post('/appointments', [
             AppointmentController::class,
             'store'
@@ -349,11 +349,12 @@ Route::middleware(['auth', 'verified', 'role:lawyer'])
         |--------------------------------------------------------------------------
         | Appointment Respond
         |--------------------------------------------------------------------------
+        |
+        | IMPORTANT:
+        | This route is POST only.
+        | Do NOT add Route::patch() for this URL.
+        |
         */
-
-        Route::get('/appointments/{appointment}/respond', function () {
-            return redirect()->route('lawyer.appointments.index');
-        })->name('appointments.respond.get');
 
         Route::post('/appointments/{appointment}/respond', [
             AppointmentController::class,
@@ -477,7 +478,6 @@ Route::middleware(['auth', 'verified', 'role:lawyer'])
             'updatePassword'
         ])->name('password.update');
     });
-
 
 
 /*
@@ -633,7 +633,6 @@ Route::middleware(['auth', 'verified', 'role:client'])
     });
 
 
-
 /*
 |--------------------------------------------------------------------------
 | ACCOUNTANT ROUTES
@@ -712,5 +711,11 @@ Route::middleware(['auth', 'verified', 'role:accountant'])
         ])->name('password.update');
     });
 
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
 
 require __DIR__ . '/auth.php';

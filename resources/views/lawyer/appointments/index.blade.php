@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('title', 'Appointments')
@@ -9,8 +8,11 @@
 
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
-        {{-- Breadcrumb --}}
+        {{-- =========================================================
+            BREADCRUMB
+        ========================================================== --}}
         <div class="mb-5 flex items-center gap-2 text-[11px] text-[#9B9992]">
+
             <a
                 href="{{ route('lawyer.dashboard') }}"
                 class="transition hover:text-[#B89452]"
@@ -23,12 +25,17 @@
             <span class="text-[#41403C]">
                 Appointments
             </span>
+
         </div>
 
-        {{-- Header --}}
+
+        {{-- =========================================================
+            PAGE HEADER
+        ========================================================== --}}
         <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 
             <div>
+
                 <p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#B89452]">
                     Lawyer Portal
                 </p>
@@ -40,12 +47,16 @@
                 <p class="mt-1.5 text-[12px] text-[#77756F]">
                     Review and manage your client appointments.
                 </p>
+
             </div>
 
+
+            {{-- Schedule Appointment --}}
             <a
                 href="{{ route('lawyer.appointments.schedule') }}"
                 class="inline-flex w-fit items-center gap-2 rounded-md bg-[#B89452] px-3.5 py-2 text-[11px] font-semibold text-white shadow-sm transition hover:bg-[#9F7D43]"
             >
+
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="h-3.5 w-3.5"
@@ -62,11 +73,15 @@
                 </svg>
 
                 Schedule Appointment
+
             </a>
 
         </div>
 
-        {{-- Success Message --}}
+
+        {{-- =========================================================
+            SUCCESS MESSAGE
+        ========================================================== --}}
         @if (session('status'))
 
             <div class="mb-5 flex items-start gap-3 rounded-lg border border-[#CFE5D5] bg-[#EFF8F2] px-4 py-3">
@@ -94,7 +109,10 @@
 
         @endif
 
-        {{-- Error Message --}}
+
+        {{-- =========================================================
+            ERROR MESSAGE
+        ========================================================== --}}
         @if (session('error'))
 
             <div class="mb-5 flex items-start gap-3 rounded-lg border border-[#E8C9C8] bg-[#FDF0EF] px-4 py-3">
@@ -122,7 +140,10 @@
 
         @endif
 
-        {{-- Validation Errors --}}
+
+        {{-- =========================================================
+            VALIDATION ERRORS
+        ========================================================== --}}
         @if ($errors->any())
 
             <div class="mb-5 rounded-lg border border-[#E8C9C8] bg-[#FDF0EF] px-4 py-3">
@@ -134,7 +155,11 @@
                 <ul class="list-inside list-disc space-y-0.5 text-[10px] text-[#7D302F]">
 
                     @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
+
+                        <li>
+                            {{ $error }}
+                        </li>
+
                     @endforeach
 
                 </ul>
@@ -143,13 +168,20 @@
 
         @endif
 
-        {{-- Appointments Card --}}
+
+        {{-- =========================================================
+            APPOINTMENTS CARD
+        ========================================================== --}}
         <div class="overflow-hidden rounded-xl border border-[#E5E2DB] bg-white shadow-sm">
 
-            {{-- Card Header --}}
+
+            {{-- =====================================================
+                CARD HEADER
+            ====================================================== --}}
             <div class="flex items-center justify-between border-b border-[#E5E2DB] px-5 py-4">
 
                 <div>
+
                     <h2 class="text-sm font-semibold text-[#181815]">
                         All Appointments
                     </h2>
@@ -158,6 +190,7 @@
                         {{ $appointments->total() }}
                         {{ \Illuminate\Support\Str::plural('appointment', $appointments->total()) }}
                     </p>
+
                 </div>
 
                 <div class="hidden items-center gap-2 sm:flex">
@@ -172,7 +205,10 @@
 
             </div>
 
-            {{-- Desktop Table --}}
+
+            {{-- =====================================================
+                DESKTOP TABLE
+            ====================================================== --}}
             <div class="hidden overflow-x-auto md:block">
 
                 @if ($appointments->count() > 0)
@@ -211,6 +247,7 @@
 
                         </thead>
 
+
                         <tbody class="divide-y divide-[#E5E2DB]">
 
                             @foreach ($appointments as $appointment)
@@ -244,9 +281,11 @@
 
                                 @endphp
 
+
                                 <tr class="transition hover:bg-[#FCFBF8]">
 
-                                    {{-- Client --}}
+
+                                    {{-- CLIENT --}}
                                     <td class="px-5 py-3">
 
                                         <div class="flex min-w-[180px] items-center gap-2.5">
@@ -271,7 +310,8 @@
 
                                     </td>
 
-                                    {{-- Date --}}
+
+                                    {{-- DATE --}}
                                     <td class="whitespace-nowrap px-5 py-3">
 
                                         <span class="text-[11px] font-medium text-[#41403C]">
@@ -280,7 +320,8 @@
 
                                     </td>
 
-                                    {{-- Time --}}
+
+                                    {{-- TIME --}}
                                     <td class="whitespace-nowrap px-5 py-3">
 
                                         <span class="text-[10px] text-[#77756F]">
@@ -289,7 +330,8 @@
 
                                     </td>
 
-                                    {{-- Note --}}
+
+                                    {{-- NOTE --}}
                                     <td class="px-5 py-3">
 
                                         <p
@@ -301,7 +343,8 @@
 
                                     </td>
 
-                                    {{-- Status --}}
+
+                                    {{-- STATUS --}}
                                     <td class="whitespace-nowrap px-5 py-3">
 
                                         @if ($status === 'approved')
@@ -338,17 +381,22 @@
 
                                     </td>
 
-                                    {{-- Actions --}}
+
+                                    {{-- ACTIONS --}}
                                     <td class="px-5 py-3">
 
                                         <div class="flex items-center justify-end gap-1.5">
 
                                             @if ($status === 'pending')
 
-                                                {{-- Approve --}}
+
+                                                {{-- =================================================
+                                                    APPROVE FORM
+                                                ================================================== --}}
                                                 <form
+                                                    action="{{ route('lawyer.appointments.respond', ['appointment' => $appointment->id]) }}"
                                                     method="POST"
-                                                    action="{{ route('lawyer.appointments.respond', $appointment) }}"
+                                                    class="inline"
                                                 >
 
                                                     @csrf
@@ -385,10 +433,14 @@
 
                                                 </form>
 
-                                                {{-- Reject --}}
+
+                                                {{-- =================================================
+                                                    REJECT FORM
+                                                ================================================== --}}
                                                 <form
+                                                    action="{{ route('lawyer.appointments.respond', ['appointment' => $appointment->id]) }}"
                                                     method="POST"
-                                                    action="{{ route('lawyer.appointments.respond', $appointment) }}"
+                                                    class="inline"
                                                 >
 
                                                     @csrf
@@ -425,6 +477,7 @@
 
                                                 </form>
 
+
                                             @else
 
                                                 <span class="text-[10px] text-[#9B9992]">
@@ -445,8 +498,10 @@
 
                     </table>
 
+
                 @else
 
+                    {{-- EMPTY DESKTOP STATE --}}
                     <div class="flex flex-col items-center justify-center px-6 py-16 text-center">
 
                         <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#F7F4ED]">
@@ -482,7 +537,10 @@
 
             </div>
 
-            {{-- Mobile Cards --}}
+
+            {{-- =====================================================
+                MOBILE CARDS
+            ====================================================== --}}
             <div class="divide-y divide-[#E5E2DB] md:hidden">
 
                 @forelse ($appointments as $appointment)
@@ -516,9 +574,11 @@
 
                     @endphp
 
+
                     <div class="p-4">
 
-                        {{-- Client --}}
+
+                        {{-- CLIENT + STATUS --}}
                         <div class="mb-4 flex items-center justify-between gap-3">
 
                             <div class="flex min-w-0 items-center gap-2.5">
@@ -541,7 +601,8 @@
 
                             </div>
 
-                            {{-- Status --}}
+
+                            {{-- STATUS --}}
                             @if ($status === 'approved')
 
                                 <span class="shrink-0 rounded-full bg-[#EFF8F2] px-2 py-0.5 text-[9px] font-semibold text-[#27633D]">
@@ -576,7 +637,8 @@
 
                         </div>
 
-                        {{-- Appointment Details --}}
+
+                        {{-- APPOINTMENT DETAILS --}}
                         <div class="mb-4 grid grid-cols-2 gap-3">
 
                             <div>
@@ -590,6 +652,7 @@
                                 </p>
 
                             </div>
+
 
                             <div>
 
@@ -605,7 +668,8 @@
 
                         </div>
 
-                        {{-- Note --}}
+
+                        {{-- NOTE --}}
                         <div class="mb-4">
 
                             <p class="mb-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#9B9992]">
@@ -618,15 +682,19 @@
 
                         </div>
 
-                        {{-- Mobile Actions --}}
+
+                        {{-- =================================================
+                            MOBILE ACTIONS
+                        ================================================== --}}
                         @if ($status === 'pending')
 
                             <div class="flex items-center gap-2">
 
-                                {{-- Approve --}}
+
+                                {{-- APPROVE --}}
                                 <form
+                                    action="{{ route('lawyer.appointments.respond', ['appointment' => $appointment->id]) }}"
                                     method="POST"
-                                    action="{{ route('lawyer.appointments.respond', $appointment) }}"
                                     class="flex-1"
                                 >
 
@@ -640,7 +708,7 @@
 
                                     <button
                                         type="submit"
-                                        class="flex w-full items-center justify-center gap-1.5 rounded-md bg-[#3D8B5A] px-3 py-2 text-[10px] font-semibold text-white transition hover:bg-[#27633D]"
+                                        class="flex w-full items-center justify-center gap-1.5 rounded-md bg-[#3D8B5A] px-3 py-2 text-[10px] font-semibold text-white transition hover:bg-[#27633D] focus:outline-none focus:ring-2 focus:ring-[#3D8B5A]"
                                     >
 
                                         <svg
@@ -664,10 +732,11 @@
 
                                 </form>
 
-                                {{-- Reject --}}
+
+                                {{-- REJECT --}}
                                 <form
+                                    action="{{ route('lawyer.appointments.respond', ['appointment' => $appointment->id]) }}"
                                     method="POST"
-                                    action="{{ route('lawyer.appointments.respond', $appointment) }}"
                                     class="flex-1"
                                 >
 
@@ -681,7 +750,7 @@
 
                                     <button
                                         type="submit"
-                                        class="flex w-full items-center justify-center gap-1.5 rounded-md bg-[#B94A48] px-3 py-2 text-[10px] font-semibold text-white transition hover:bg-[#7D302F]"
+                                        class="flex w-full items-center justify-center gap-1.5 rounded-md bg-[#B94A48] px-3 py-2 text-[10px] font-semibold text-white transition hover:bg-[#7D302F] focus:outline-none focus:ring-2 focus:ring-[#B94A48]"
                                     >
 
                                         <svg
@@ -713,6 +782,7 @@
 
                 @empty
 
+                    {{-- EMPTY MOBILE STATE --}}
                     <div class="px-5 py-14 text-center">
 
                         <div class="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-[#F7F4ED]">
@@ -748,7 +818,10 @@
 
             </div>
 
-            {{-- Pagination --}}
+
+            {{-- =====================================================
+                PAGINATION
+            ====================================================== --}}
             @if ($appointments->hasPages())
 
                 <div class="border-t border-[#E5E2DB] px-5 py-3">

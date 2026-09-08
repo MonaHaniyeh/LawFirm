@@ -30,7 +30,7 @@
 
     /* =========================================
        PAGE HEADER
-    ========================================= */
+    ========================================== */
 
     .page-header {
         display: flex;
@@ -68,7 +68,7 @@
 
     /* =========================================
        STAT CARDS
-    ========================================= */
+    ========================================== */
 
     .stats-grid {
         display: grid;
@@ -124,7 +124,7 @@
 
     /* =========================================
        SECTIONS
-    ========================================= */
+    ========================================== */
 
     .section {
         margin-bottom: 42px;
@@ -161,7 +161,7 @@
 
     /* =========================================
        CASE TABLE
-    ========================================= */
+    ========================================== */
 
     .table-card {
         overflow: hidden;
@@ -233,7 +233,7 @@
 
     /* =========================================
        STATUS
-    ========================================= */
+    ========================================== */
 
     .status {
         display: inline-flex;
@@ -277,9 +277,14 @@
         background: var(--danger-bg);
     }
 
+    .status-approved {
+        color: var(--success);
+        background: var(--success-bg);
+    }
+
     /* =========================================
        DETAILS LINK
-    ========================================= */
+    ========================================== */
 
     .details-link {
         display: inline-flex;
@@ -303,7 +308,7 @@
 
     /* =========================================
        PENDING APPOINTMENTS
-    ========================================= */
+    ========================================== */
 
     .attention-section {
         position: relative;
@@ -403,7 +408,11 @@
 
     /* =========================================
        ACTION BUTTONS
-    ========================================= */
+    ========================================== */
+
+    .appointment-actions form {
+        margin: 0;
+    }
 
     .action-button {
         display: inline-flex;
@@ -418,7 +427,16 @@
         transition:
             background .2s ease,
             color .2s ease,
-            border-color .2s ease;
+            border-color .2s ease,
+            transform .15s ease;
+    }
+
+    .action-button:hover {
+        transform: translateY(-1px);
+    }
+
+    .action-button:active {
+        transform: translateY(0);
     }
 
     .accept-button {
@@ -445,7 +463,7 @@
 
     /* =========================================
        EMPTY STATES
-    ========================================= */
+    ========================================== */
 
     .empty-state {
         padding: 50px 30px;
@@ -489,8 +507,21 @@
     }
 
     /* =========================================
+       ALERT
+    ========================================== */
+
+    .dashboard-alert {
+        margin-bottom: 25px;
+        padding: 13px 16px;
+        border: 1px solid #d8e8dc;
+        color: var(--success);
+        background: var(--success-bg);
+        font-size: 12px;
+    }
+
+    /* =========================================
        RESPONSIVE
-    ========================================= */
+    ========================================== */
 
     @media (max-width: 1100px) {
         .appointment-row {
@@ -544,6 +575,17 @@
 @section('content')
 
 <div class="lawyer-dashboard">
+
+    {{-- =========================================
+         SUCCESS MESSAGE
+    ========================================== --}}
+
+    @if (session('status'))
+        <div class="dashboard-alert">
+            {{ session('status') }}
+        </div>
+    @endif
+
 
     {{-- =========================================
          PAGE HEADER
@@ -658,7 +700,6 @@
                             <tr>
 
                                 {{-- Case number --}}
-
                                 <td>
                                     <div class="case-number">
                                         {{ $case->case_number }}
@@ -667,7 +708,6 @@
 
 
                                 {{-- Type --}}
-
                                 <td>
                                     <div class="case-type">
                                         {{ $case->case_type }}
@@ -676,7 +716,6 @@
 
 
                                 {{-- Start date --}}
-
                                 <td>
                                     <div class="date">
                                         {{ $case->start_date?->format('M d, Y') ?? '—' }}
@@ -685,7 +724,6 @@
 
 
                                 {{-- Status --}}
-
                                 <td>
 
                                     @php
@@ -704,6 +742,8 @@
                                                 status-pending
                                             @elseif ($status === 'rejected')
                                                 status-rejected
+                                            @elseif ($status === 'approved')
+                                                status-approved
                                             @else
                                                 status-closed
                                             @endif
@@ -716,7 +756,6 @@
 
 
                                 {{-- Client --}}
-
                                 <td>
                                     <div class="client-name">
                                         {{ $case->client?->name ?? '—' }}
@@ -725,7 +764,6 @@
 
 
                                 {{-- Details --}}
-
                                 <td>
 
                                     <a
@@ -833,7 +871,9 @@
 
                     <div class="appointment-row">
 
-                        {{-- Client --}}
+                        {{-- =====================================
+                             CLIENT
+                        ====================================== --}}
 
                         <div class="appointment-client">
 
@@ -862,7 +902,9 @@
                         </div>
 
 
-                        {{-- Requested date/time --}}
+                        {{-- =====================================
+                             REQUESTED DATE / TIME
+                        ====================================== --}}
 
                         <div>
 
@@ -886,6 +928,7 @@
                                 @if ($appointment->appointment_time)
 
                                     ·
+
                                     {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('g:i A') }}
 
                                 @endif
@@ -895,7 +938,9 @@
                         </div>
 
 
-                        {{-- Case reference --}}
+                        {{-- =====================================
+                             CASE REFERENCE
+                        ====================================== --}}
 
                         <div>
 
@@ -910,25 +955,23 @@
                         </div>
 
 
-                        {{-- Actions --}}
+                        {{-- =====================================
+                             ACTIONS
+                        ====================================== --}}
 
                         <div class="appointment-actions">
 
-                            {{-- Accept --}}
-
+                            {{-- ACCEPT --}}
                             <form
-                                action="{{ route('lawyer.appointments.respond', $appointment) }}"
+                                action="{{ route('lawyer.appointments.respond', ['appointment' => $appointment->id]) }}"
                                 method="POST"
                             >
-
                                 @csrf
-
-                                @method('PATCH')
 
                                 <input
                                     type="hidden"
                                     name="status"
-                                    value="scheduled"
+                                    value="approved"
                                 >
 
                                 <button
@@ -937,20 +980,15 @@
                                 >
                                     Accept
                                 </button>
-
                             </form>
 
 
-                            {{-- Reject --}}
-
+                            {{-- REJECT --}}
                             <form
-                                action="{{ route('lawyer.appointments.respond', $appointment) }}"
+                                action="{{ route('lawyer.appointments.respond', ['appointment' => $appointment->id]) }}"
                                 method="POST"
                             >
-
                                 @csrf
-
-                                @method('PATCH')
 
                                 <input
                                     type="hidden"
@@ -964,7 +1002,6 @@
                                 >
                                     Reject
                                 </button>
-
                             </form>
 
                         </div>

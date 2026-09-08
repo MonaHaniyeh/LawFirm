@@ -25,12 +25,7 @@ class BillingController extends Controller
             ->take(20)
             ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Billing Summary
-        |--------------------------------------------------------------------------
-        */
-
+        // Billing Summary
         $totalAmount = Invoice::sum('amount');
 
         $paidAmount = Invoice::where('status', 'paid')
@@ -81,7 +76,10 @@ class BillingController extends Controller
         );
     }
 
-    public function showInvoice(Invoice $invoice)
+    /**
+     * Display a single invoice.
+     */
+    public function show(Invoice $invoice)
     {
         $invoice->load([
             'client',
