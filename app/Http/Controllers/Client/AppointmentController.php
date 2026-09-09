@@ -18,7 +18,8 @@ class AppointmentController extends Controller
         $appointments = Appointment::where('client_id', $user->id)->with(['lawyer', 'case',])->orderByDesc('appointment_date')->orderByDesc('appointment_time')->get(); /* |-------------------------------------------------------------------------- | Return Appointments Page |-------------------------------------------------------------------------- */
         return view('client.appointments.index', compact('cases', 'appointments'));
     }
-    /** * Store a new appointment request. */ public function store(Request $request)
+    /** * Store a new appointment request. */
+    public function store(Request $request)
     {
         $user = Auth::user();
         $validated = $request->validate(['case_id' => ['required', 'exists:cases,id',], 'date' => ['required', 'date',], 'time' => ['required',], 'location' => ['required', 'string', 'max:255',], 'note' => ['nullable', 'string', 'max:2000',],]); /* |-------------------------------------------------------------------------- | Make Sure The Case Belongs To This Client |-------------------------------------------------------------------------- */
