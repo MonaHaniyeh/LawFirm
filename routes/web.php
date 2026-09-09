@@ -664,19 +664,6 @@ Route::middleware(['auth', 'verified', 'role:accountant'])
 
         Route::resource('invoices', InvoiceController::class)
             ->except(['destroy']);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Billing
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get('/billing', function () {
-            return view('accountant.billing.index');
-        })->name('billing.index');
-
-
         /*
         |--------------------------------------------------------------------------
         | Account Settings
