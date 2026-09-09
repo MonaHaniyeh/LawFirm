@@ -19,28 +19,26 @@
 
 @endsection
 
+
 @section('content')
 
 <div class="space-y-6">
 
-
     {{-- ========================================================= --}}
-    {{-- STATUS MESSAGE --}}
+    {{-- SUCCESS STATUS MESSAGE --}}
     {{-- ========================================================= --}}
 
     @if(session('status'))
 
         <div class="rounded-lg border border-[#cddbcf] bg-[#eef5ef] px-4 py-3 text-xs text-[#52745a]">
-
             {{ session('status') }}
-
         </div>
 
     @endif
 
 
     {{-- ========================================================= --}}
-    {{-- VALIDATION ERRORS --}}
+    {{-- GENERAL ERRORS --}}
     {{-- ========================================================= --}}
 
     @if($errors->any())
@@ -79,7 +77,6 @@
 
             <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
 
-
                 {{-- Main information --}}
                 <div class="min-w-0">
 
@@ -104,13 +101,25 @@
                         class="mt-3 break-words text-3xl font-semibold text-[#151515]"
                         style="font-family: 'Cormorant Garamond', serif;"
                     >
-                        {{ $case->case_type ?? 'Legal Matter' }}
+                        {{ $case->title ?? $case->case_type ?? 'Legal Matter' }}
                     </h1>
 
 
+                    @if($case->case_type)
+
+                        <p class="mt-1 text-xs text-[#9a763d]">
+                            {{ $case->case_type }}
+                        </p>
+
+                    @endif
+
+
                     <p class="mt-2 text-xs text-[#77736b]">
+
                         Filed
+
                         {{ $case->start_date?->format('F d, Y') ?? '—' }}
+
                     </p>
 
                 </div>
@@ -133,6 +142,14 @@
 
                             <p class="mt-0.5 text-[10px] text-[#77736b]">
                                 {{ $case->lawyer->specialization }}
+                            </p>
+
+                        @endif
+
+                        @if($case->lawyer->email)
+
+                            <p class="mt-1 break-all text-[10px] text-[#99958d]">
+                                {{ $case->lawyer->email }}
                             </p>
 
                         @endif
@@ -199,8 +216,6 @@
 
     <section class="overflow-hidden rounded-xl border border-[#ddd7ca] bg-[#fffdf8]">
 
-
-        {{-- Documents header --}}
         <div class="flex flex-col gap-3 border-b border-[#ddd7ca] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
 
             <div>
@@ -226,9 +241,7 @@
         </div>
 
 
-
         <div class="p-5 sm:p-6">
-
 
             {{-- ================================================= --}}
             {{-- DOCUMENT LIST --}}
@@ -242,12 +255,8 @@
 
                         <div class="flex flex-col gap-3 rounded-lg border border-[#eeeae0] bg-[#f7f4ed] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
 
-
-                            {{-- Document information --}}
                             <div class="flex min-w-0 items-center gap-3">
 
-
-                                {{-- Icon --}}
                                 <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#f4eddf] text-[#9a763d]">
 
                                     <svg
@@ -275,7 +284,6 @@
                                 </div>
 
 
-                                {{-- Details --}}
                                 <div class="min-w-0">
 
                                     <p class="break-words text-xs font-medium text-[#151515]">
@@ -286,13 +294,9 @@
                                     <p class="mt-0.5 break-words text-[10px] text-[#99958d]">
 
                                         @if($document->mime_type)
-
                                             {{ $document->mime_type }}
-
                                         @else
-
                                             Document
-
                                         @endif
 
 
@@ -320,8 +324,6 @@
                             </div>
 
 
-
-                            {{-- Download --}}
                             <a
                                 href="{{ route('client.cases.documents.download', [$case, $document]) }}"
                                 class="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-md border border-[#ddd7ca] bg-white px-3 py-1.5 text-[10px] font-medium text-[#555149] transition hover:border-[#b99a63] hover:bg-[#f4eddf] hover:text-[#9a763d]"
@@ -353,12 +355,7 @@
 
                 </div>
 
-
             @else
-
-                {{-- ================================================= --}}
-                {{-- EMPTY DOCUMENT STATE --}}
-                {{-- ================================================= --}}
 
                 <div class="rounded-lg border border-dashed border-[#ddd7ca] bg-[#f7f4ed] px-5 py-8 text-center">
 
@@ -438,7 +435,6 @@
                     @csrf
 
 
-                    {{-- Document title --}}
                     <div>
 
                         <label
@@ -474,7 +470,6 @@
 
 
 
-                    {{-- File --}}
                     <div>
 
                         <label
@@ -538,7 +533,6 @@
 
 
 
-                    {{-- Upload button --}}
                     <div class="flex justify-end">
 
                         <button
@@ -585,14 +579,10 @@
 
 
     {{-- ========================================================= --}}
-    {{-- MESSAGES --}}
+    {{-- CASE MESSAGES --}}
     {{-- ========================================================= --}}
 
-    <section
-        class="overflow-hidden rounded-xl border border-[#ddd7ca] bg-[#fffdf8]"
-        x-data
-    >
-
+    <section class="overflow-hidden rounded-xl border border-[#ddd7ca] bg-[#fffdf8]">
 
         {{-- Header --}}
         <div class="border-b border-[#ddd7ca] px-5 py-4 sm:px-6">
@@ -613,8 +603,10 @@
 
         <div class="p-5 sm:p-6">
 
+            {{-- ================================================= --}}
+            {{-- EXISTING MESSAGES --}}
+            {{-- ================================================= --}}
 
-            {{-- Existing messages --}}
             @if($messages->isNotEmpty())
 
                 <div class="max-h-[420px] space-y-3 overflow-y-auto pr-1">
@@ -622,7 +614,7 @@
                     @foreach($messages as $message)
 
                         @php
-                            $isMine = $message->sender_id === auth()->id();
+                            $isMine = (int) $message->sender_id === (int) auth()->id();
                         @endphp
 
 
@@ -646,7 +638,7 @@
                                 </p>
 
 
-                                <div class="mt-2 flex items-center gap-2 text-[9px] text-[#99958d]">
+                                <div class="mt-2 flex flex-wrap items-center gap-2 text-[9px] text-[#99958d]">
 
                                     <span>
                                         {{ $message->sender?->name ?? 'User' }}
@@ -672,9 +664,31 @@
 
                 <div class="rounded-lg border border-dashed border-[#ddd7ca] bg-[#f7f4ed] px-5 py-8 text-center">
 
-                    <p class="text-sm font-medium text-[#555149]">
+                    <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#eeeae0] text-[#99958d]">
+
+                        <svg
+                            class="h-5 w-5 text-[#99958d]"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.5A2.5 2.5 0 0 1 4 13.5v-7Z"
+                            />
+
+                        </svg>
+
+                    </div>
+
+
+                    <p class="mt-3 text-sm font-medium text-[#555149]">
                         No messages yet
                     </p>
+
 
                     <p class="mt-1 text-xs text-[#99958d]">
                         Send a message below to contact your lawyer.
@@ -686,7 +700,10 @@
 
 
 
-            {{-- New message --}}
+            {{-- ================================================= --}}
+            {{-- NEW MESSAGE --}}
+            {{-- ================================================= --}}
+
             <div class="mt-6 border-t border-[#ddd7ca] pt-6">
 
                 <h3 class="mb-4 text-sm font-semibold text-[#151515]">
@@ -694,9 +711,11 @@
                 </h3>
 
 
+                {{-- IMPORTANT: MESSAGE FORM --}}
                 <form
+                    id="case-message-form"
                     method="POST"
-                    action="{{ route('client.cases.messages.store', $case) }}"
+                    action="{{ route('client.cases.messages.store', ['case' => $case->id]) }}"
                     class="space-y-4"
                 >
 
@@ -707,7 +726,7 @@
                     <div>
 
                         <label
-                            for="subject"
+                            for="message_subject"
                             class="mb-1.5 block text-xs font-medium text-[#555149]"
                         >
                             Subject
@@ -715,7 +734,7 @@
 
 
                         <input
-                            id="subject"
+                            id="message_subject"
                             type="text"
                             name="subject"
                             value="{{ old('subject') }}"
@@ -724,14 +743,27 @@
                             class="block w-full rounded-md border border-[#ddd7ca] bg-white px-3 py-2.5 text-xs text-[#555149] outline-none transition placeholder:text-[#aaa59b] focus:border-[#b99a63] focus:ring-1 focus:ring-[#b99a63]"
                         >
 
+
+                        @error('subject')
+
+                            <p class="mt-1.5 text-[10px] text-[#914f49]">
+                                {{ $message }}
+                            </p>
+
+                        @enderror
+
                     </div>
 
 
-                    {{-- Message --}}
+
+                    {{-- ================================================= --}}
+                    {{-- MESSAGE CONTENT --}}
+                    {{-- ================================================= --}}
+
                     <div>
 
                         <label
-                            for="content"
+                            for="case_message_content"
                             class="mb-1.5 block text-xs font-medium text-[#555149]"
                         >
                             Message
@@ -740,19 +772,45 @@
 
 
                         <textarea
-                            id="content"
+                            id="case_message_content"
                             name="content"
                             required
                             maxlength="5000"
-                            rows="5"
+                            rows="6"
                             placeholder="Write your message..."
                             class="block w-full resize-y rounded-md border border-[#ddd7ca] bg-white px-3 py-3 text-xs leading-6 text-[#555149] outline-none transition placeholder:text-[#aaa59b] focus:border-[#b99a63] focus:ring-1 focus:ring-[#b99a63]"
                         >{{ old('content') }}</textarea>
 
+
+                        <div class="mt-1.5 flex items-start justify-between gap-3">
+
+                            <div>
+
+                                @error('content')
+
+                                    <p class="text-[10px] text-[#914f49]">
+                                        {{ $message }}
+                                    </p>
+
+                                @enderror
+
+                            </div>
+
+
+                            <span class="shrink-0 text-[9px] text-[#99958d]">
+                                Maximum 5000 characters
+                            </span>
+
+                        </div>
+
                     </div>
 
 
-                    {{-- Send --}}
+
+                    {{-- ================================================= --}}
+                    {{-- SEND BUTTON --}}
+                    {{-- ================================================= --}}
+
                     <div class="flex justify-end">
 
                         <button
@@ -795,6 +853,7 @@
         </div>
 
     </section>
+
 
 
     {{-- ========================================================= --}}

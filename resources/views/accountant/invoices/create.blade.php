@@ -87,7 +87,10 @@
         font-family: inherit;
         font-size: 12px;
         outline: none;
-        transition: border-color .2s ease, background .2s ease;
+        transition:
+            border-color .2s ease,
+            background .2s ease,
+            box-shadow .2s ease;
     }
 
     .form-group input,
@@ -108,6 +111,7 @@
     .form-group textarea:focus {
         border-color: var(--gold);
         background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.10);
     }
 
     .help {
@@ -160,7 +164,9 @@
         font-size: 12px;
         font-weight: 600;
         cursor: pointer;
-        transition: background .2s ease, transform .2s ease;
+        transition:
+            background .2s ease,
+            transform .2s ease;
     }
 
     .create-button:hover {
@@ -170,6 +176,22 @@
 
     .money {
         font-family: "IBM Plex Mono", monospace !important;
+    }
+
+    .status-preview {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 7px;
+        color: #8b867c;
+        font-size: 10px;
+    }
+
+    .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #a89d8b;
     }
 
     @media (max-width: 750px) {
@@ -227,8 +249,9 @@
 
     {{-- Draft Notice --}}
     <div class="draft-note">
-        <strong>Draft invoice.</strong>
-        This invoice will be saved as a draft — you can send it once ready.
+        <strong>Invoice status.</strong>
+        Choose the current status below.
+        Draft is selected by default.
     </div>
 
 
@@ -239,6 +262,7 @@
             method="POST"
             action="{{ route('accountant.invoices.store') }}"
         >
+
             @csrf
 
             <div class="invoice-form-grid">
@@ -255,6 +279,7 @@
                         id="case_id"
                         required
                     >
+
                         <option value="">
                             Select an open case
                         </option>
@@ -271,6 +296,7 @@
                             </option>
 
                         @endforeach
+
                     </select>
 
                     <div class="help">
@@ -308,7 +334,9 @@
                     >
 
                     <div class="help">
-                        <span>Currency: JOD</span>
+                        <span>
+                            Currency: JOD
+                        </span>
                     </div>
 
                     @error('amount')
@@ -350,6 +378,72 @@
                 </div>
 
 
+                {{-- Status --}}
+                <div class="form-group">
+
+                    <label for="status">
+                        Status <span class="required">*</span>
+                    </label>
+
+                    <select
+                        name="status"
+                        id="status"
+                        required
+                    >
+
+                        <option
+                            value="draft"
+                            @selected(old('status', 'draft') === 'draft')
+                        >
+                            Draft
+                        </option>
+
+                        <option
+                            value="sent"
+                            @selected(old('status') === 'sent')
+                        >
+                            Sent
+                        </option>
+
+                        <option
+                            value="paid"
+                            @selected(old('status') === 'paid')
+                        >
+                            Paid
+                        </option>
+
+                        <option
+                            value="overdue"
+                            @selected(old('status') === 'overdue')
+                        >
+                            Overdue
+                        </option>
+
+                        <option
+                            value="void"
+                            @selected(old('status') === 'void')
+                        >
+                            Void
+                        </option>
+
+                    </select>
+
+                    <div class="status-preview">
+                        <span class="status-dot"></span>
+                        <span>
+                            Draft is selected by default.
+                        </span>
+                    </div>
+
+                    @error('status')
+                        <div class="error">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
+                </div>
+
+
                 {{-- Description --}}
                 <div class="form-group form-full">
 
@@ -365,6 +459,7 @@
                     >{{ old('description') }}</textarea>
 
                     <div class="help">
+
                         <span>
                             Optional · Maximum 1000 characters
                         </span>
@@ -372,6 +467,7 @@
                         <span id="counter">
                             0 / 1000
                         </span>
+
                     </div>
 
                     @error('description')
@@ -399,7 +495,7 @@
                     type="submit"
                     class="create-button"
                 >
-                    Create draft invoice
+                    Create invoice
                 </button>
 
             </div>
@@ -429,7 +525,10 @@
                 `${description.value.length} / 1000`;
         }
 
-        description.addEventListener('input', updateCounter);
+        description.addEventListener(
+            'input',
+            updateCounter
+        );
 
         updateCounter();
     });

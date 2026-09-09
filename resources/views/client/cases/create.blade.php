@@ -24,7 +24,9 @@
     }"
 >
 
-    {{-- Header --}}
+    {{-- =========================================================
+        HEADER
+    ========================================================== --}}
     <div class="mb-6">
 
         <p class="text-[10px] font-medium uppercase tracking-[0.18em] text-[#b99a63]">
@@ -46,7 +48,9 @@
     </div>
 
 
-    {{-- Errors --}}
+    {{-- =========================================================
+        ERRORS
+    ========================================================== --}}
     @if($errors->any())
 
         <div class="mb-6 rounded-lg border border-[#e0c7c3] bg-[#faf0ee] px-4 py-3">
@@ -59,7 +63,9 @@
 
                 @foreach($errors->all() as $error)
 
-                    <li>{{ $error }}</li>
+                    <li>
+                        {{ $error }}
+                    </li>
 
                 @endforeach
 
@@ -70,7 +76,9 @@
     @endif
 
 
-    {{-- Form --}}
+    {{-- =========================================================
+        FORM
+    ========================================================== --}}
     <form
         method="POST"
         action="{{ route('client.cases.store') }}"
@@ -80,7 +88,9 @@
         @csrf
 
 
-        {{-- Form header --}}
+        {{-- =====================================================
+            FORM HEADER
+        ====================================================== --}}
         <div class="border-b border-[#ddd7ca] px-5 py-5 sm:px-6">
 
             <h2
@@ -97,9 +107,50 @@
         </div>
 
 
+        {{-- =====================================================
+            FORM FIELDS
+        ====================================================== --}}
         <div class="space-y-6 px-5 py-6 sm:px-6">
 
-            {{-- Legal Category --}}
+
+            {{-- =================================================
+                CASE TITLE
+            ================================================== --}}
+            <div>
+
+                <label
+                    for="title"
+                    class="mb-1.5 block text-xs font-medium text-[#555149]"
+                >
+                    Case Title
+                    <span class="text-[#914f49]">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value="{{ old('title') }}"
+                    required
+                    maxlength="255"
+                    placeholder="e.g. Employment contract dispute"
+                    class="block w-full rounded-md border border-[#ddd7ca] bg-white px-3 py-2.5 text-xs text-[#555149] outline-none transition placeholder:text-[#aaa59b] focus:border-[#b99a63] focus:ring-1 focus:ring-[#b99a63]"
+                >
+
+                @error('title')
+
+                    <p class="mt-1.5 text-[10px] text-[#914f49]">
+                        {{ $message }}
+                    </p>
+
+                @enderror
+
+            </div>
+
+
+            {{-- =================================================
+                LEGAL CATEGORY
+            ================================================== --}}
             <div>
 
                 <label
@@ -145,7 +196,9 @@
             </div>
 
 
-            {{-- Lawyer --}}
+            {{-- =================================================
+                LAWYER
+            ================================================== --}}
             <div>
 
                 <label
@@ -171,7 +224,10 @@
 
                         <option
                             value="{{ $lawyer->id }}"
-                            @selected((string) old('lawyer_id') === (string) $lawyer->id)
+                            @selected(
+                                (string) old('lawyer_id') ===
+                                (string) $lawyer->id
+                            )
                         >
                             {{ $lawyer->name }}
 
@@ -196,7 +252,9 @@
             </div>
 
 
-            {{-- Description --}}
+            {{-- =================================================
+                DESCRIPTION
+            ================================================== --}}
             <div>
 
                 <div class="mb-1.5 flex items-center justify-between gap-3">
@@ -254,7 +312,9 @@
             </div>
 
 
-            {{-- Notice --}}
+            {{-- =================================================
+                NOTICE
+            ================================================== --}}
             <div class="rounded-lg border border-[#e6dcc8] bg-[#f8f3e8] px-4 py-4">
 
                 <div class="flex gap-3">
@@ -268,14 +328,17 @@
                             stroke="currentColor"
                             stroke-width="1.6"
                         >
+
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
                                 d="M12 9v3.5m0 3.5h.01M10.3 4.5h3.4L20 18.5H4L10.3 4.5Z"
                             />
+
                         </svg>
 
                     </div>
+
 
                     <div>
 
@@ -298,9 +361,12 @@
         </div>
 
 
-        {{-- Actions --}}
+        {{-- =====================================================
+            ACTIONS
+        ====================================================== --}}
         <div class="flex flex-col-reverse gap-2 border-t border-[#ddd7ca] bg-[#f7f4ed] px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
 
+            {{-- Cancel --}}
             <a
                 href="{{ route('client.cases.index') }}"
                 class="inline-flex items-center justify-center rounded-md border border-[#ddd7ca] bg-white px-3.5 py-2 text-[11px] font-medium text-[#555149] transition hover:border-[#b99a63] hover:bg-[#f4eddf]"
@@ -309,6 +375,7 @@
             </a>
 
 
+            {{-- Submit --}}
             <button
                 type="submit"
                 class="inline-flex items-center justify-center gap-1.5 rounded-md bg-[#151515] px-3.5 py-2 text-[11px] font-medium text-[#f5f1e8] transition hover:bg-[#b99a63] hover:text-[#151515]"
@@ -321,11 +388,13 @@
                     stroke="currentColor"
                     stroke-width="1.7"
                 >
+
                     <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
                         d="M12 5v14M5 12h14"
                     />
+
                 </svg>
 
                 File Legal Matter

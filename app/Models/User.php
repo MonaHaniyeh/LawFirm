@@ -33,6 +33,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'bio',
         'billing_rate',
         'google_id',
+        'is_active',
     ];
 
     /**
@@ -52,6 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'billing_rate' => 'decimal:2',
+            'is_active' => 'boolean',
         ];
     }
 

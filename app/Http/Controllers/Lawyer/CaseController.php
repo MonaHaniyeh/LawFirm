@@ -27,41 +27,54 @@ class CaseController extends Controller
         /** @var User $lawyer */
         $lawyer = Auth::user();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Base Query
+        |--------------------------------------------------------------------------
+        */
+
         $casesQuery = $lawyer->casesAsLawyer()
             ->with('client');
 
-        // Filter by case type
-        if ($request->filled('case_type')) {
-            $casesQuery->where(
-                'case_type',
-                $request->case_type
-            );
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Search
+        |--------------------------------------------------------------------------
+        |
+        | Search by:
+        | - Case number
+        | - Case title
+        | - Case description
+        | - Client name
+        | - Client email
+        |
+        */
 
-        // Filter by status
-        if ($request->filled('status')) {
-            $casesQuery->where(
-                'status',
-                $request->status
-            );
-        }
-
-        // Search
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = trim($request->input('search'));
 
             $casesQuery->where(function ($query) use ($search) {
+
                 $query->where(
-                    'title',
+                    'case_number',
                     'like',
                     "%{$search}%"
                 )
+
+                    ->orWhere(
+                        'case_type',
+                        'like',
+                        "%{$search}%"
+                    )
+
                     ->orWhere(
                         'description',
                         'like',
                         "%{$search}%"
                     )
+
                     ->orWhereHas('client', function ($clientQuery) use ($search) {
+
                         $clientQuery
                             ->where(
                                 'name',
@@ -77,30 +90,60 @@ class CaseController extends Controller
             });
         }
 
-        $cases = $casesQuery
-            ->latest('start_date')
-            ->paginate(15)
-            ->withQueryString();
+        /*
+    |--------------------------------------------------------------------------
+    | Filter By Status
+    |--------------------------------------------------------------------------
+    */
+        if ($request->filled('status')) {
+            $status = $request->input('status');
 
-        /**
-         * Get the case types used by this lawyer.
-         *
-         * This is required by lawyer/cases/index.blade.php
-         */
-        $caseTypes = $lawyer->casesAsLawyer()
+            if ($status === 'open') {
+                $status = 'opened';
+            }
+
+            $casesQuery->where('status', $status);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Filter By Case Type
+    |--------------------------------------------------------------------------
+    */
+        if ($request->filled('case_type')) {
+            $casesQuery->where(
+                'case_type',
+                $request->input('case_type')
+            );
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Get Case Types
+    |--------------------------------------------------------------------------
+    */
+        $caseTypes = CaseFile::query()
+            ->where('lawyer_id', $lawyer->id)
             ->whereNotNull('case_type')
             ->where('case_type', '!=', '')
             ->distinct()
             ->orderBy('case_type')
             ->pluck('case_type');
 
-        return view(
-            'lawyer.cases.index',
-            compact(
-                'cases',
-                'caseTypes'
-            )
-        );
+        /*
+    |--------------------------------------------------------------------------
+    | Pagination
+    |--------------------------------------------------------------------------
+    */
+        $cases = $casesQuery
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('lawyer.cases.index', compact(
+            'cases',
+            'caseTypes'
+        ));
     }
 
     /**
@@ -108,13 +151,35 @@ class CaseController extends Controller
      */
     public function show(CaseFile $case)
     {
-        Gate::authorize('view', $case);
+        /*
+        |--------------------------------------------------------------------------
+        | Authorization
+        |--------------------------------------------------------------------------
+        */
+
+        Gate::authorize(
+            'view',
+            $case
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Load Relationships
+        |--------------------------------------------------------------------------
+        */
 
         $case->load([
             'client',
+            'lawyer',
             'documents.uploader',
             'messages.sender',
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Return View
+        |--------------------------------------------------------------------------
+        */
 
         return view(
             'lawyer.cases.show',
@@ -127,7 +192,10 @@ class CaseController extends Controller
      */
     public function edit(CaseFile $case)
     {
-        Gate::authorize('update', $case);
+        Gate::authorize(
+            'update',
+            $case
+        );
 
         return view(
             'lawyer.cases.edit',
@@ -142,7 +210,22 @@ class CaseController extends Controller
         Request $request,
         CaseFile $case
     ) {
-        Gate::authorize('update', $case);
+        /*
+        |--------------------------------------------------------------------------
+        | Authorization
+        |--------------------------------------------------------------------------
+        */
+
+        Gate::authorize(
+            'update',
+            $case
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validate Request
+        |--------------------------------------------------------------------------
+        */
 
         $data = $request->validate([
             'description' => [
@@ -150,6 +233,7 @@ class CaseController extends Controller
                 'string',
                 'min:10',
             ],
+
             'status' => [
                 'required',
                 Rule::in([
@@ -157,6 +241,7 @@ class CaseController extends Controller
                     'closed',
                 ]),
             ],
+
             'end_date' => [
                 'nullable',
                 'date',
@@ -169,6 +254,7 @@ class CaseController extends Controller
         | Update Case
         |--------------------------------------------------------------------------
         */
+
         $case->update($data);
 
         /*
@@ -176,6 +262,7 @@ class CaseController extends Controller
         | Load Client
         |--------------------------------------------------------------------------
         */
+
         $case->load([
             'client',
             'lawyer',
@@ -186,9 +273,12 @@ class CaseController extends Controller
         | Notify Client
         |--------------------------------------------------------------------------
         */
-        $case->client->notify(
-            new CaseUpdatedNotification($case)
-        );
+
+        if ($case->client) {
+            $case->client->notify(
+                new CaseUpdatedNotification($case)
+            );
+        }
 
         return back()->with(
             'status',
@@ -203,7 +293,22 @@ class CaseController extends Controller
         Request $request,
         CaseFile $case
     ) {
-        Gate::authorize('participate', $case);
+        /*
+        |--------------------------------------------------------------------------
+        | Authorization
+        |--------------------------------------------------------------------------
+        */
+
+        Gate::authorize(
+            'participate',
+            $case
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validate Message
+        |--------------------------------------------------------------------------
+        */
 
         $data = $request->validate([
             'subject' => [
@@ -211,12 +316,19 @@ class CaseController extends Controller
                 'string',
                 'max:150',
             ],
+
             'content' => [
                 'required',
                 'string',
                 'max:5000',
             ],
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create Message
+        |--------------------------------------------------------------------------
+        */
 
         Message::create([
             'case_id' => $case->id,
@@ -235,12 +347,29 @@ class CaseController extends Controller
 
     /**
      * Upload a document to a case.
+     *
+     * This is the main document upload method.
      */
-    public function storeDocument(
+    public function uploadDocument(
         Request $request,
         CaseFile $case
     ) {
-        Gate::authorize('participate', $case);
+        /*
+        |--------------------------------------------------------------------------
+        | Authorization
+        |--------------------------------------------------------------------------
+        */
+
+        Gate::authorize(
+            'participate',
+            $case
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validate Document
+        |--------------------------------------------------------------------------
+        */
 
         $data = $request->validate([
             'title' => [
@@ -248,6 +377,7 @@ class CaseController extends Controller
                 'string',
                 'max:150',
             ],
+
             'document' => [
                 'required',
                 'file',
@@ -258,10 +388,20 @@ class CaseController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Store File
+        | Get Uploaded File
         |--------------------------------------------------------------------------
         */
+
         $file = $request->file('document');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Store File
+        |--------------------------------------------------------------------------
+        |
+        | The file is stored on the private disk.
+        |
+        */
 
         $path = $file->store(
             "cases/{$case->id}/documents",
@@ -270,9 +410,10 @@ class CaseController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Create Document
+        | Create Document Record
         |--------------------------------------------------------------------------
         */
+
         $document = Document::create([
             'case_id' => $case->id,
             'uploaded_by' => Auth::id(),
@@ -284,16 +425,20 @@ class CaseController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Load Relationships
+        | Load Document Relationships
         |--------------------------------------------------------------------------
-        |
-        | The notification needs the case and uploader information.
-        |
         */
+
         $document->load([
             'case',
             'uploader',
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Load Case Relationships
+        |--------------------------------------------------------------------------
+        */
 
         $case->load([
             'client',
@@ -305,20 +450,45 @@ class CaseController extends Controller
         | Notify Client
         |--------------------------------------------------------------------------
         |
-        | Lawyer uploaded the document.
-        | Therefore, the client who owns the case receives:
-        |
-        | 1. Database notification
-        | 2. Email notification
+        | The lawyer uploaded a document,
+        | so the client receives the notification.
         |
         */
-        $case->client->notify(
-            new DocumentUploadedNotification($document)
-        );
+
+        if ($case->client) {
+            $case->client->notify(
+                new DocumentUploadedNotification($document)
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Return
+        |--------------------------------------------------------------------------
+        */
 
         return back()->with(
             'status',
             'Document uploaded successfully.'
+        );
+    }
+
+    /**
+     * Backward-compatible document upload method.
+     *
+     * If your route still uses:
+     *
+     * CaseController@storeDocument
+     *
+     * it will still work.
+     */
+    public function storeDocument(
+        Request $request,
+        CaseFile $case
+    ) {
+        return $this->uploadDocument(
+            $request,
+            $case
         );
     }
 
@@ -329,21 +499,54 @@ class CaseController extends Controller
         CaseFile $case,
         Document $document
     ) {
-        Gate::authorize('participate', $case);
+        /*
+        |--------------------------------------------------------------------------
+        | Authorization
+        |--------------------------------------------------------------------------
+        */
+
+        Gate::authorize(
+            'participate',
+            $case
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Make Sure Document Belongs To Case
+        |--------------------------------------------------------------------------
+        */
 
         abort_unless(
             $document->case_id === $case->id,
             404
         );
 
+        /*
+        |--------------------------------------------------------------------------
+        | Get Private Storage Disk
+        |--------------------------------------------------------------------------
+        */
+
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('private');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Make Sure File Exists
+        |--------------------------------------------------------------------------
+        */
 
         abort_unless(
             $disk->exists($document->file_path),
             404,
             'Document not found.'
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Download
+        |--------------------------------------------------------------------------
+        */
 
         return $disk->download(
             $document->file_path,

@@ -20,7 +20,7 @@ class LawyerController extends Controller
             ->withCount([
                 'casesAsLawyer as active_case_count' => function ($query) {
                     $query->where('status', 'opened');
-                }
+                },
             ])
             ->orderBy('name')
             ->paginate(20);
@@ -89,10 +89,21 @@ class LawyerController extends Controller
                 'unique:users,license_number',
             ],
 
+            'billing_rate' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
             'bio' => [
                 'nullable',
                 'string',
                 'max:2000',
+            ],
+
+            'is_active' => [
+                'required',
+                'boolean',
             ],
         ]);
 
@@ -102,10 +113,14 @@ class LawyerController extends Controller
             'phone' => $data['phone'],
             'password' => Hash::make($data['password']),
             'role' => 'lawyer',
-            'status' => 'active',
+
+            // 1 = active, 0 = inactive
+            'is_active' => (bool) $data['is_active'],
+
             'specialization' => $data['specialization'],
             'experience_years' => $data['experience_years'],
             'license_number' => $data['license_number'],
+            'billing_rate' => $data['billing_rate'] ?? null,
             'bio' => $data['bio'] ?? null,
         ]);
 
@@ -178,21 +193,58 @@ class LawyerController extends Controller
                 'max:60',
             ],
 
+            'license_number' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('users', 'license_number')->ignore($lawyer->id),
+            ],
+
+            'billing_rate' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
             'bio' => [
                 'nullable',
                 'string',
                 'max:2000',
             ],
+
+            'is_active' => [
+                'required',
+                'boolean',
+            ],
+
+            'password' => [
+                'nullable',
+                'confirmed',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers(),
+            ],
         ]);
 
-        $lawyer->update([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'],
-            'specialization' => $data['specialization'],
-            'experience_years' => $data['experience_years'],
-            'bio' => $data['bio'] ?? null,
-        ]);
+        $lawyer->name = $data['name'];
+        $lawyer->email = $data['email'];
+        $lawyer->phone = $data['phone'];
+        $lawyer->specialization = $data['specialization'];
+        $lawyer->experience_years = $data['experience_years'];
+        $lawyer->license_number = $data['license_number'];
+        $lawyer->billing_rate = $data['billing_rate'] ?? null;
+        $lawyer->bio = $data['bio'] ?? null;
+
+        // IMPORTANT:
+        // Save the account status to is_active.
+        $lawyer->is_active = (bool) $data['is_active'];
+
+        // Only update password when a new password was entered.
+        if (!empty($data['password'])) {
+            $lawyer->password = Hash::make($data['password']);
+        }
+
+        $lawyer->save();
 
         return redirect()
             ->route('admin.lawyers.show', $lawyer)
@@ -207,19 +259,33 @@ class LawyerController extends Controller
         abort_unless($lawyer->role === 'lawyer', 404);
 
         /*
-         * Do not delete a lawyer who still has open cases.
-         * Reassign or close those cases first.
-         */
-        if (
-            $lawyer->casesAsLawyer()
-                ->where('status', 'opened')
-                ->exists()
-        ) {
-            return back()->with(
-                'error',
-                'This lawyer has open cases. Reassign them before removing this account.'
-            );
+        |--------------------------------------------------------------------------
+        | Prevent deletion when the lawyer has open cases
+        |--------------------------------------------------------------------------
+        |
+        | We don't want to delete a lawyer who is currently responsible
+        | for active/open cases.
+        |
+        */
+
+        $hasOpenCases = $lawyer->casesAsLawyer()
+            ->where('status', 'opened')
+            ->exists();
+
+        if ($hasOpenCases) {
+            return redirect()
+                ->route('admin.lawyers.show', $lawyer)
+                ->with(
+                    'error',
+                    'This lawyer cannot be deleted because they still have open cases. Reassign or close the open cases first.'
+                );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete lawyer
+        |--------------------------------------------------------------------------
+        */
 
         $lawyer->delete();
 
