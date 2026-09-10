@@ -42,7 +42,7 @@ class InvoiceController extends Controller
 
             ->latest()
             ->paginate(20)
-            ->withQueryString();
+            ->withQueryString(); 
 
         return view(
             'accountant.invoices.index',
