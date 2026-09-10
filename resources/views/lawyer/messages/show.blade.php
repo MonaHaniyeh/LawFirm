@@ -5,7 +5,6 @@
 @section('content')
 
 @php
-
     $client = $case->client;
 
     $clientName = $client?->name ?? 'Client';
@@ -13,7 +12,6 @@
     $initial = strtoupper(
         substr(trim($clientName), 0, 1)
     );
-
 @endphp
 
 <div class="min-h-screen bg-[#F7F4ED] text-[#181815]">
@@ -30,7 +28,6 @@
                 href="{{ route('lawyer.messages.index') }}"
                 class="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#77756F] transition hover:text-[#B89452]"
             >
-
                 <svg
                     class="h-3.5 w-3.5"
                     fill="none"
@@ -46,9 +43,7 @@
                 </svg>
 
                 Messages
-
             </a>
-
 
             <div class="mt-5">
 
@@ -57,7 +52,6 @@
                 >
                     Client Communication
                 </div>
-
 
                 <div
                     class="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
@@ -71,15 +65,15 @@
                             Conversation
                         </h1>
 
-                        <p class="mt-2 text-[11px] text-[#77756F]">
+                        <p
+                            class="mt-2 text-[11px] text-[#77756F]"
+                        >
                             Continue your conversation regarding this case.
                         </p>
 
                     </div>
 
-
                     {{-- REPLY BUTTON --}}
-
                     <a
                         href="{{ route('lawyer.messages.reply.form', $case) }}"
                         class="inline-flex h-10 items-center justify-center gap-2 bg-[#181815] px-5 text-[9px] font-bold uppercase tracking-[0.1em] text-white transition hover:bg-[#B89452]"
@@ -161,13 +155,11 @@
                 >
 
                     {{-- CLIENT INITIAL --}}
-
                     <div
                         class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#181815] font-serif text-base font-semibold text-[#D8BE8A]"
                     >
                         {{ $initial }}
                     </div>
-
 
                     <div class="min-w-0">
 
@@ -217,6 +209,38 @@
 
 
             {{-- ================================================= --}}
+            {{-- TYPING INDICATOR --}}
+            {{-- ================================================= --}}
+
+            <div
+                id="typing-indicator"
+                class="hidden border-b border-[#E8E6E1] bg-[#FAF9F6] px-5 py-3 sm:px-7"
+            >
+
+                <div
+                    class="flex items-center gap-2 text-[11px] text-[#77756F]"
+                >
+
+                    <span
+                        class="inline-flex items-center gap-1.5 rounded-full border border-[#DDD7CA] bg-[#F7F4ED] px-3 py-1.5"
+                    >
+
+                        <span
+                            class="h-1.5 w-1.5 animate-pulse rounded-full bg-[#8B7041]"
+                        ></span>
+
+                        <span id="typing-text">
+                            Client is typing...
+                        </span>
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            {{-- ================================================= --}}
             {{-- MESSAGES --}}
             {{-- ================================================= --}}
 
@@ -228,13 +252,10 @@
                 @forelse($messages as $message)
 
                     @php
-
                         $isLawyer =
                             (int) $message->sender_id ===
                             (int) Auth::id();
-
                     @endphp
-
 
                     <div
                         class="flex {{ $isLawyer ? 'justify-end' : 'justify-start' }}"
@@ -252,13 +273,11 @@
                                 <span
                                     class="text-[8px] font-bold uppercase tracking-[0.1em] text-[#9B9992]"
                                 >
-
                                     {{
                                         $isLawyer
                                             ? 'You'
                                             : ($message->sender?->name ?? 'Client')
                                     }}
-
                                 </span>
 
                             </div>
@@ -274,7 +293,6 @@
                                             ? 'rounded-[12px_3px_12px_12px] bg-[#181815] text-white'
                                             : 'rounded-[3px_12px_12px_12px] border border-[#E8E6E1] bg-white text-[#41403C]'
                                     }}
-                                "
                             >
 
                                 @if($message->subject)
@@ -287,8 +305,9 @@
 
                                 @endif
 
-
-                                <div class="whitespace-pre-line break-words">
+                                <div
+                                    class="whitespace-pre-line break-words"
+                                >
                                     {{ $message->content }}
                                 </div>
 
@@ -300,9 +319,7 @@
                             <div
                                 class="mt-1.5 text-[8px] text-[#9B9992] {{ $isLawyer ? 'text-right' : 'text-left' }}"
                             >
-
                                 {{ $message->created_at->format('d M Y · g:i A') }}
-
                             </div>
 
                         </div>
@@ -331,13 +348,11 @@
                                     stroke-width="1.5"
                                     viewBox="0 0 24 24"
                                 >
-
                                     <path
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
                                         d="M8 10h8M8 14h5m-8 5l-3 2 1-4.5A8 8 0 013 9.5C3 5.91 6.58 3 11 3h2c4.42 0 8 2.91 8 6.5S17.42 16 13 16h-2c-1.18 0-2.3-.2-3.3-.57L5 19z"
                                     />
-
                                 </svg>
 
                             </div>
@@ -377,7 +392,6 @@
                         stroke-width="1.7"
                         viewBox="0 0 24 24"
                     >
-
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
@@ -389,7 +403,6 @@
                             stroke-linejoin="round"
                             d="M21.5 4.5l-6 17-3.5-7.5L4.5 10l17-5.5z"
                         />
-
                     </svg>
 
                     Reply to {{ $clientName }}
@@ -415,438 +428,488 @@
 
 <script>
 
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
 
-        /*
-        |--------------------------------------------------------------------------
-        | Current case
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | Current case
+    |--------------------------------------------------------------------------
+    */
 
-        const caseId = @json($case->id);
+    const caseId = @json($case->id);
 
-        const currentUserId = @json(auth()->id());
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DOM elements
-        |--------------------------------------------------------------------------
-        */
-
-        const messagesContainer =
-            document.getElementById('messages-container');
-
-        const noMessages =
-            document.getElementById('no-messages');
-
-        const realtimeIndicator =
-            document.getElementById('realtime-indicator');
-
-        const realtimeText =
-            document.getElementById('realtime-text');
+    const currentUserId = @json(auth()->id());
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Check Echo
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | DOM elements
+    |--------------------------------------------------------------------------
+    */
 
-        if (!window.Echo) {
+    const messagesContainer =
+        document.getElementById('messages-container');
 
-            console.error(
-                'Laravel Echo is not available.'
-            );
+    const noMessages =
+        document.getElementById('no-messages');
 
-            if (realtimeIndicator) {
+    const realtimeIndicator =
+        document.getElementById('realtime-indicator');
 
-                realtimeIndicator.classList.remove(
-                    'bg-[#AAA59C]'
-                );
+    const realtimeText =
+        document.getElementById('realtime-text');
 
-                realtimeIndicator.classList.add(
-                    'bg-[#914F49]'
-                );
+    const typingIndicator =
+        document.getElementById('typing-indicator');
 
-            }
-
-            if (realtimeText) {
-
-                realtimeText.textContent =
-                    'Live messages unavailable.';
-
-            }
-
-            return;
-        }
+    const typingText =
+        document.getElementById('typing-text');
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Check messages container
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | Check Echo
+    |--------------------------------------------------------------------------
+    */
 
-        if (!messagesContainer) {
+    if (!window.Echo) {
 
-            console.error(
-                'Messages container was not found.'
-            );
-
-            return;
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Subscribe to private case channel
-        |--------------------------------------------------------------------------
-        |
-        | This must match:
-        |
-        | routes/channels.php
-        |
-        | Broadcast::channel('case.{caseId}', ...)
-        |
-        */
-
-        const channelName =
-            `case.${caseId}`;
-
-
-        console.log(
-            `Subscribing to private channel: ${channelName}`
+        console.error(
+            'Laravel Echo is not available.'
         );
 
+        if (realtimeIndicator) {
 
-        window.Echo
-            .private(channelName)
+            realtimeIndicator.classList.remove(
+                'bg-[#AAA59C]'
+            );
+
+            realtimeIndicator.classList.add(
+                'bg-[#914F49]'
+            );
+        }
+
+        if (realtimeText) {
+
+            realtimeText.textContent =
+                'Live messages unavailable.';
+        }
+
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Check messages container
+    |--------------------------------------------------------------------------
+    */
+
+    if (!messagesContainer) {
+
+        console.error(
+            'Messages container was not found.'
+        );
+
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Subscribe to private case channel
+    |--------------------------------------------------------------------------
+    */
+
+    const channelName =
+        `case.${caseId}`;
+
+
+    console.log(
+        `Subscribing to private channel: ${channelName}`
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Private Echo channel
+    |--------------------------------------------------------------------------
+    */
+
+    const channel =
+        window.Echo.private(channelName);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Successfully subscribed
+    |--------------------------------------------------------------------------
+    */
+
+    channel.subscribed(() => {
+
+        console.log(
+            `Successfully subscribed to ${channelName}`
+        );
+
+        if (realtimeIndicator) {
+
+            realtimeIndicator.classList.remove(
+                'bg-[#AAA59C]',
+                'bg-[#914F49]'
+            );
+
+            realtimeIndicator.classList.add(
+                'bg-[#52745A]'
+            );
+        }
+
+        if (realtimeText) {
+
+            realtimeText.textContent =
+                'Live messages connected.';
+        }
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Subscription error
+    |--------------------------------------------------------------------------
+    */
+
+    channel.error((error) => {
+
+        console.error(
+            'Pusher channel error:',
+            error
+        );
+
+        if (realtimeIndicator) {
+
+            realtimeIndicator.classList.remove(
+                'bg-[#AAA59C]',
+                'bg-[#52745A]'
+            );
+
+            realtimeIndicator.classList.add(
+                'bg-[#914F49]'
+            );
+        }
+
+        if (realtimeText) {
+
+            realtimeText.textContent =
+                'Unable to connect to live messages.';
+        }
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Listen for new messages
+    |--------------------------------------------------------------------------
+    */
+
+    channel.listen(
+        '.message.sent',
+        (event) => {
+
+            console.log(
+                'New message received:',
+                event
+            );
 
 
             /*
             |--------------------------------------------------------------------------
-            | Successfully subscribed
+            | Prevent duplicate messages
             |--------------------------------------------------------------------------
             */
 
-            .subscribed(() => {
+            if (
+                document.querySelector(
+                    `[data-message-id="${event.id}"]`
+                )
+            ) {
 
-                console.log(
-                    `Successfully subscribed to ${channelName}`
-                );
-
-
-                if (realtimeIndicator) {
-
-                    realtimeIndicator.classList.remove(
-                        'bg-[#AAA59C]',
-                        'bg-[#914F49]'
-                    );
-
-                    realtimeIndicator.classList.add(
-                        'bg-[#52745A]'
-                    );
-
-                }
-
-
-                if (realtimeText) {
-
-                    realtimeText.textContent =
-                        'Live messages connected.';
-
-                }
-
-            })
+                return;
+            }
 
 
             /*
             |--------------------------------------------------------------------------
-            | Subscription error
+            | Remove empty state
             |--------------------------------------------------------------------------
             */
 
-            .error((error) => {
+            if (noMessages) {
 
-                console.error(
-                    'Pusher channel error:',
-                    error
-                );
-
-
-                if (realtimeIndicator) {
-
-                    realtimeIndicator.classList.remove(
-                        'bg-[#AAA59C]',
-                        'bg-[#52745A]'
-                    );
-
-                    realtimeIndicator.classList.add(
-                        'bg-[#914F49]'
-                    );
-
-                }
-
-
-                if (realtimeText) {
-
-                    realtimeText.textContent =
-                        'Unable to connect to live messages.';
-
-                }
-
-            })
+                noMessages.remove();
+            }
 
 
             /*
             |--------------------------------------------------------------------------
-            | Listen for MessageSent
+            | Determine sender
             |--------------------------------------------------------------------------
-            |
-            | Event:
-            |
-            | MessageSent::broadcastAs()
-            |
-            | returns:
-            |
-            | message.sent
-            |
-            | Echo therefore uses:
-            |
-            | .listen('.message.sent')
-            |
             */
 
-            .listen('.message.sent', (event) => {
-
-                console.log(
-                    'New message received:',
-                    event
-                );
+            const isLawyer =
+                Number(event.sender_id) ===
+                Number(currentUserId);
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | Prevent duplicate messages
-                |--------------------------------------------------------------------------
-                */
-
-                if (
-                    document.querySelector(
-                        `[data-message-id="${event.id}"]`
-                    )
-                ) {
-
-                    return;
-
-                }
+            const senderName =
+                isLawyer
+                    ? 'You'
+                    : (event.sender ?? 'Client');
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | Remove empty state
-                |--------------------------------------------------------------------------
-                */
+            /*
+            |--------------------------------------------------------------------------
+            | Format date
+            |--------------------------------------------------------------------------
+            */
 
-                if (noMessages) {
-
-                    noMessages.remove();
-
-                }
+            let formattedDate = '';
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | Determine sender
-                |--------------------------------------------------------------------------
-                */
+            if (event.created_at) {
 
-                const isLawyer =
-                    Number(event.sender_id) ===
-                    Number(currentUserId);
+                const date =
+                    new Date(event.created_at);
+
+                formattedDate =
+                    date.toLocaleString([], {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit'
+                    });
+            }
 
 
-                const senderName =
+            /*
+            |--------------------------------------------------------------------------
+            | Create message wrapper
+            |--------------------------------------------------------------------------
+            */
+
+            const wrapper =
+                document.createElement('div');
+
+
+            wrapper.dataset.messageId =
+                event.id;
+
+
+            wrapper.className =
+                `flex ${
                     isLawyer
-                        ? 'You'
-                        : (event.sender ?? 'Client');
+                        ? 'justify-end'
+                        : 'justify-start'
+                }`;
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | Format date
-                |--------------------------------------------------------------------------
-                */
+            /*
+            |--------------------------------------------------------------------------
+            | Message HTML
+            |--------------------------------------------------------------------------
+            */
 
-                let formattedDate = '';
+            wrapper.innerHTML = `
 
+                <div class="max-w-[82%] sm:max-w-[68%]">
 
-                if (event.created_at) {
+                    <div
+                        class="mb-1.5 flex items-center gap-2 ${
+                            isLawyer
+                                ? 'justify-end'
+                                : 'justify-start'
+                        }"
+                    >
 
-                    const date =
-                        new Date(event.created_at);
-
-
-                    formattedDate =
-                        date.toLocaleString([], {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                            hour: 'numeric',
-                            minute: '2-digit'
-                        });
-
-                }
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Create message element
-                |--------------------------------------------------------------------------
-                */
-
-                const wrapper =
-                    document.createElement('div');
-
-
-                wrapper.dataset.messageId =
-                    event.id;
-
-
-                wrapper.className =
-                    `flex ${
-                        isLawyer
-                            ? 'justify-end'
-                            : 'justify-start'
-                    }`;
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Message HTML
-                |--------------------------------------------------------------------------
-                */
-
-                wrapper.innerHTML = `
-
-                    <div class="max-w-[82%] sm:max-w-[68%]">
-
-                        <div
-                            class="mb-1.5 flex items-center gap-2 ${
-                                isLawyer
-                                    ? 'justify-end'
-                                    : 'justify-start'
-                            }"
+                        <span
+                            class="text-[8px] font-bold uppercase tracking-[0.1em] text-[#9B9992]"
                         >
+                            ${escapeHtml(senderName)}
+                        </span>
 
-                            <span
-                                class="text-[8px] font-bold uppercase tracking-[0.1em] text-[#9B9992]"
-                            >
-                                ${escapeHtml(senderName)}
-                            </span>
-
-                        </div>
+                    </div>
 
 
-                        <div
-                            class="
-                                px-4 py-3 text-[11px] leading-5
-                                ${
-                                    isLawyer
-                                        ? 'rounded-[12px_3px_12px_12px] bg-[#181815] text-white'
-                                        : 'rounded-[3px_12px_12px_12px] border border-[#E8E6E1] bg-white text-[#41403C]'
-                                }
-                            "
-                        >
-
+                    <div
+                        class="
+                            px-4 py-3 text-[11px] leading-5
                             ${
-                                event.subject
-                                    ? `
-                                        <p
-                                            class="mb-2 text-[10px] font-bold uppercase tracking-[0.08em] ${
-                                                isLawyer
-                                                    ? 'text-[#D8BE8A]'
-                                                    : 'text-[#B89452]'
-                                            }"
-                                        >
-                                            ${escapeHtml(event.subject)}
-                                        </p>
-                                    `
-                                    : ''
+                                isLawyer
+                                    ? 'rounded-[12px_3px_12px_12px] bg-[#181815] text-white'
+                                    : 'rounded-[3px_12px_12px_12px] border border-[#E8E6E1] bg-white text-[#41403C]'
                             }
+                        "
+                    >
 
-
-                            <div
-                                class="whitespace-pre-line break-words"
-                            >
-                                ${escapeHtml(event.content)}
-                            </div>
-
-                        </div>
-
+                        ${
+                            event.subject
+                                ? `
+                                    <p
+                                        class="mb-2 text-[10px] font-bold uppercase tracking-[0.08em] ${
+                                            isLawyer
+                                                ? 'text-[#D8BE8A]'
+                                                : 'text-[#B89452]'
+                                        }"
+                                    >
+                                        ${escapeHtml(event.subject)}
+                                    </p>
+                                `
+                                : ''
+                        }
 
                         <div
-                            class="mt-1.5 text-[8px] text-[#9B9992] ${
-                                isLawyer
-                                    ? 'text-right'
-                                    : 'text-left'
-                            }"
+                            class="whitespace-pre-line break-words"
                         >
-                            ${escapeHtml(formattedDate)}
+                            ${escapeHtml(event.content)}
                         </div>
 
                     </div>
 
-                `;
+
+                    <div
+                        class="mt-1.5 text-[8px] text-[#9B9992] ${
+                            isLawyer
+                                ? 'text-right'
+                                : 'text-left'
+                        }"
+                    >
+                        ${escapeHtml(formattedDate)}
+                    </div>
+
+                </div>
+
+            `;
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | Add message
-                |--------------------------------------------------------------------------
-                */
+            /*
+            |--------------------------------------------------------------------------
+            | Add message
+            |--------------------------------------------------------------------------
+            */
 
-                messagesContainer.appendChild(
-                    wrapper
-                );
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Scroll to newest message
-                |--------------------------------------------------------------------------
-                */
-
-                messagesContainer.scrollTop =
-                    messagesContainer.scrollHeight;
-
-            });
+            messagesContainer.appendChild(
+                wrapper
+            );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Escape HTML
-        |--------------------------------------------------------------------------
-        |
-        | This prevents message content from being interpreted
-        | as HTML/JavaScript.
-        |
-        */
+            /*
+            |--------------------------------------------------------------------------
+            | Scroll to newest message
+            |--------------------------------------------------------------------------
+            */
 
-        function escapeHtml(value) {
-
-            const div =
-                document.createElement('div');
-
-            div.textContent =
-                value ?? '';
-
-            return div.innerHTML;
+            messagesContainer.scrollTop =
+                messagesContainer.scrollHeight;
 
         }
+    );
 
-    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Listen for typing indicator
+    |--------------------------------------------------------------------------
+    */
+
+    channel.listen(
+        '.user.typing',
+        (event) => {
+
+            console.log(
+                'Typing event received:',
+                event
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Ignore our own typing event
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                Number(event.user_id) ===
+                Number(currentUserId)
+            ) {
+
+                return;
+            }
+
+
+            if (
+                !typingIndicator ||
+                !typingText
+            ) {
+
+                return;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Show typing indicator
+            |--------------------------------------------------------------------------
+            */
+
+            if (event.typing) {
+
+                typingText.textContent =
+                    `${event.user_name ?? 'Client'} is typing...`;
+
+                typingIndicator.classList.remove(
+                    'hidden'
+                );
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Hide typing indicator
+            |--------------------------------------------------------------------------
+            */
+
+            else {
+
+                typingIndicator.classList.add(
+                    'hidden'
+                );
+            }
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Escape HTML
+    |--------------------------------------------------------------------------
+    */
+
+    function escapeHtml(value) {
+
+        const div =
+            document.createElement('div');
+
+        div.textContent =
+            value ?? '';
+
+        return div.innerHTML;
+    }
+
+});
 
 </script>
 

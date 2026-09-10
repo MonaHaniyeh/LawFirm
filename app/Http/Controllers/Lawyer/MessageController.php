@@ -8,6 +8,7 @@ use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Events\MessageSent;
+use App\Events\UserTyping;
 
 class MessageController extends Controller
 {
@@ -239,5 +240,34 @@ class MessageController extends Controller
                 'status',
                 'Your reply has been sent successfully.'
             );
+    }
+
+    public function typing(Request $request)
+    {
+        $lawyer = Auth::user();
+
+        $data = $request->validate([
+            'case_id' => ['required', 'integer'],
+            'typing' => ['required', 'boolean'],
+        ]);
+
+        $case = CaseFile::findOrFail($data['case_id']);
+
+        abort_unless(
+            (int) $case->lawyer_id === (int) $lawyer->id,
+            403
+        );
+
+        UserTyping::dispatch(
+            caseId: (int) $case->id,
+            userId: (int) $lawyer->id,
+            userName: $lawyer->name,
+            role: 'lawyer',
+            typing: (bool) $data['typing']
+        );
+
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

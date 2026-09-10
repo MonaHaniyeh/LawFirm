@@ -37,7 +37,7 @@ use App\Http\Controllers\Accountant\InvoiceController;
 use App\Http\Controllers\Lawyer\DashboardController as LawyerDashboardController;
 use App\Http\Controllers\Lawyer\AppointmentController;
 use App\Http\Controllers\Lawyer\CaseController;
-use App\Http\Controllers\Lawyer\MessageController;
+use App\Http\Controllers\Lawyer\MessageController as LawyerMessageController;
 use App\Http\Controllers\Lawyer\CaseDocumentController;
 
 /*
@@ -425,24 +425,30 @@ Route::middleware(['auth', 'verified', 'role:lawyer'])
         */
 
         Route::get('/messages', [
-            MessageController::class,
+            LawyerMessageController::class,
             'index'
         ])->name('messages.index');
 
         Route::get('/messages/{message}', [
-            MessageController::class,
+            LawyerMessageController::class,
             'show'
         ])->name('messages.show');
 
         Route::get('/messages/{case}/reply', [
-            MessageController::class,
+            LawyerMessageController::class,
             'replyForm'
         ])->name('messages.reply.form');
 
         Route::post('/messages/{case}/reply', [
-            MessageController::class,
+            LawyerMessageController::class,
             'reply'
         ])->name('messages.reply');
+
+        Route::post('/messages/typing', [
+            LawyerMessageController::class,
+            'typing'
+        ])->name('messages.typing');
+
 
 
         /*
@@ -596,6 +602,11 @@ Route::middleware(['auth', 'verified', 'role:client'])
             ClientMessageController::class,
             'reply'
         ])->name('messages.reply');
+
+        Route::post('/messages/typing', [
+            ClientMessageController::class,
+            'typing'
+        ])->name('messages.typing');
 
 
         /*

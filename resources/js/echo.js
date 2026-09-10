@@ -9,3 +9,7 @@ window.Echo = new Echo({
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
     forceTLS: true,
 });
+
+console.log('Laravel Echo initialized:', window.Echo);
+console.log('Pusher key:', import.meta.env.VITE_PUSHER_APP_KEY);
+console.log('Pusher cluster:', import.meta.env.VITE_PUSHER_APP_CLUSTER);
