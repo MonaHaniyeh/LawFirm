@@ -429,25 +429,20 @@ Route::middleware(['auth', 'verified', 'role:lawyer'])
             'index'
         ])->name('messages.index');
 
-        Route::get('/messages/{message}', [
+        Route::post('/messages/typing', [
+            LawyerMessageController::class,
+            'typing'
+        ])->name('messages.typing');
+
+        Route::get('/messages/{case}', [
             LawyerMessageController::class,
             'show'
         ])->name('messages.show');
-
-        Route::get('/messages/{case}/reply', [
-            LawyerMessageController::class,
-            'replyForm'
-        ])->name('messages.reply.form');
 
         Route::post('/messages/{case}/reply', [
             LawyerMessageController::class,
             'reply'
         ])->name('messages.reply');
-
-        Route::post('/messages/typing', [
-            LawyerMessageController::class,
-            'typing'
-        ])->name('messages.typing');
 
 
 

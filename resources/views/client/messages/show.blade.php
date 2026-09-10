@@ -91,6 +91,35 @@
 
 
         {{-- ========================================================= --}}
+        {{-- Validation errors --}}
+        {{-- ========================================================= --}}
+
+        @if ($errors->any())
+
+            <div class="rounded-lg border border-[#ead0cd] bg-[#fbf3f2] px-4 py-3 text-xs text-[#914f49]">
+
+                <p class="font-semibold">
+                    Please check your message.
+                </p>
+
+                <ul class="mt-1 list-disc pl-4">
+
+                    @foreach ($errors->all() as $error)
+
+                        <li>
+                            {{ $error }}
+                        </li>
+
+                    @endforeach
+
+                </ul>
+
+            </div>
+
+        @endif
+
+
+        {{-- ========================================================= --}}
         {{-- Real-time connection status --}}
         {{-- ========================================================= --}}
 
@@ -117,7 +146,11 @@
 
         <section class="overflow-hidden rounded-xl border border-[#ddd7ca] bg-white">
 
+
+            {{-- ===================================================== --}}
             {{-- Conversation header --}}
+            {{-- ===================================================== --}}
+
             <div class="border-b border-[#ddd7ca] px-5 py-4">
 
                 <h2 class="text-sm font-semibold text-[#151515]">
@@ -133,15 +166,16 @@
 
 
             {{-- ===================================================== --}}
-            {{-- Messages --}}
+            {{-- Messages area --}}
             {{-- ===================================================== --}}
 
             <div
                 id="messages-container"
-                class="space-y-5 p-5 sm:p-6"
+                class="min-h-[420px] space-y-5 p-5 sm:p-6"
             >
 
                 {{-- Existing messages --}}
+
                 <div
                     id="messages-list"
                     class="space-y-5"
@@ -163,6 +197,7 @@
                             <div class="max-w-[85%] sm:max-w-[70%]">
 
                                 {{-- Sender --}}
+
                                 <div
                                     class="mb-1 flex items-center gap-2 {{ $isMine ? 'justify-end' : 'justify-start' }}"
                                 >
@@ -183,6 +218,7 @@
 
 
                                 {{-- Message bubble --}}
+
                                 <div
                                     class="rounded-2xl px-4 py-3
                                     {{ $isMine
@@ -194,21 +230,16 @@
 
                                         <p
                                             class="mb-2 text-xs font-semibold
-                                            {{ $isMine
-                                                ? 'text-white'
-                                                : 'text-[#151515]' }}"
+                                            {{ $isMine ? 'text-white' : 'text-[#151515]' }}"
                                         >
                                             {{ $conversationMessage->subject }}
                                         </p>
 
                                     @endif
 
-
                                     <p
                                         class="whitespace-pre-line break-words text-sm leading-6
-                                        {{ $isMine
-                                            ? 'text-white'
-                                            : 'text-[#55514b]' }}"
+                                        {{ $isMine ? 'text-white' : 'text-[#55514b]' }}"
                                     >
                                         {{ $conversationMessage->content }}
                                     </p>
@@ -248,17 +279,18 @@
 
 
                 {{-- ================================================= --}}
-                {{-- Typing indicator INSIDE chat --}}
+                {{-- Typing indicator --}}
                 {{-- ================================================= --}}
 
                 <div
                     id="typing-indicator"
-                    class="hidden"
+                    class="hidden pt-1"
                 >
 
                     <div class="flex items-end gap-2">
 
                         {{-- Lawyer avatar --}}
+
                         <div
                             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#151515] text-[11px] font-semibold text-[#B89452]"
                         >
@@ -267,6 +299,7 @@
 
 
                         {{-- Typing bubble --}}
+
                         <div
                             class="rounded-2xl rounded-bl-md border border-[#E8E6E1] bg-white px-4 py-2.5 shadow-sm"
                         >
@@ -280,8 +313,6 @@
                                     Lawyer is typing...
                                 </span>
 
-
-                                {{-- Animated dots --}}
                                 <span class="flex items-center gap-1">
 
                                     <span
@@ -332,7 +363,6 @@
                         Reply to your lawyer
                     </label>
 
-
                     <textarea
                         id="content"
                         name="content"
@@ -343,7 +373,6 @@
                         class="w-full rounded-xl border border-[#ddd7ca] bg-white px-4 py-3 text-sm text-[#151515] outline-none transition placeholder:text-[#aaa59c] focus:border-[#8b7041] focus:ring-1 focus:ring-[#8b7041]"
                     >{{ old('content') }}</textarea>
 
-
                     @error('content')
 
                         <p class="mt-2 text-xs text-[#914f49]">
@@ -352,8 +381,11 @@
 
                     @enderror
 
+                    <div class="mt-3 flex items-center justify-between gap-4">
 
-                    <div class="mt-3 flex justify-end">
+                        <p class="text-[10px] text-[#aaa59c]">
+                            Press Ctrl + Enter to send
+                        </p>
 
                         <button
                             type="submit"
@@ -385,6 +417,11 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    console.log('==========================================');
+    console.log('CLIENT MESSAGE SCRIPT LOADED');
+    console.log('==========================================');
+
+
     /* =========================================================
        Current case and user
     ========================================================= */
@@ -392,6 +429,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const caseId = @json($case->id);
 
     const currentUserId = @json(auth()->id());
+
+
+    console.log('Client case ID:', caseId);
+    console.log('Client user ID:', currentUserId);
 
 
     /* =========================================================
@@ -426,6 +467,43 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('message-form');
 
 
+    console.log(
+        'CLIENT TEXTAREA FOUND:',
+        messageInput
+    );
+
+    console.log(
+        'CLIENT MESSAGE FORM FOUND:',
+        messageForm
+    );
+
+    console.log(
+        'CLIENT TYPING INDICATOR FOUND:',
+        typingIndicator
+    );
+
+
+    /* =========================================================
+       Basic element check
+    ========================================================= */
+
+    if (!messageInput) {
+
+        console.error(
+            'CLIENT ERROR: textarea #content was not found.'
+        );
+
+    }
+
+    if (!messageForm) {
+
+        console.error(
+            'CLIENT ERROR: #message-form was not found.'
+        );
+
+    }
+
+
     /* =========================================================
        Typing variables
     ========================================================= */
@@ -438,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* =========================================================
-       Hide typing indicator
+       Hide remote typing indicator
     ========================================================= */
 
     function hideTypingIndicator() {
@@ -454,7 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* =========================================================
-       Show typing indicator
+       Show remote typing indicator
     ========================================================= */
 
     function showTypingIndicator(name = 'Lawyer') {
@@ -462,33 +540,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!typingIndicator || !typingText) {
 
             console.error(
-                'Typing indicator elements not found.'
+                'CLIENT ERROR: typing indicator elements not found.'
             );
 
             return;
         }
 
-
         typingText.textContent =
             `${name} is typing...`;
 
-
         typingIndicator.classList.remove('hidden');
 
-
-        /*
-         * Keep the indicator inside the chat visible
-         * while typing events continue arriving.
-         */
         clearTimeout(remoteTypingTimer);
-
 
         remoteTypingTimer = setTimeout(() => {
 
             hideTypingIndicator();
 
         }, 2500);
-
     }
 
 
@@ -514,6 +583,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function sendTypingStatus(typing) {
 
+        console.log(
+            '=========================================='
+        );
+
+        console.log(
+            'CLIENT SEND TYPING STATUS:',
+            typing
+        );
+
+        console.log(
+            'Client typing endpoint:',
+            @json(route('client.messages.typing'))
+        );
+
+        console.log(
+            'Client case ID:',
+            caseId
+        );
+
+        console.log(
+            '=========================================='
+        );
+
+
         try {
 
             const csrfToken =
@@ -525,7 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!csrfToken) {
 
                 console.error(
-                    'CSRF token was not found.'
+                    'CLIENT ERROR: CSRF token was not found.'
                 );
 
                 return;
@@ -540,25 +633,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         headers: {
                             'Content-Type': 'application/json',
-
                             'X-CSRF-TOKEN': csrfToken,
-
                             'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
 
                         body: JSON.stringify({
                             case_id: caseId,
-                            typing: typing,
-                        }),
+                            typing: typing
+                        })
                     }
                 );
 
 
+            console.log(
+                'CLIENT TYPING HTTP STATUS:',
+                response.status
+            );
+
+
             if (!response.ok) {
 
+                const responseText =
+                    await response.text();
+
                 console.error(
-                    'Typing request failed:',
-                    response.status
+                    'CLIENT TYPING REQUEST FAILED:',
+                    response.status,
+                    responseText
                 );
 
                 return;
@@ -566,19 +668,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
             console.log(
-                'Client typing status sent:',
+                'CLIENT TYPING STATUS SENT SUCCESSFULLY:',
                 typing
             );
 
         } catch (error) {
 
             console.error(
-                'Typing status error:',
+                'CLIENT TYPING STATUS ERROR:',
                 error
             );
-
         }
-
     }
 
 
@@ -587,6 +687,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ========================================================= */
 
     function startTyping() {
+
+        console.log(
+            'CLIENT START TYPING'
+        );
+
 
         if (!currentlyTyping) {
 
@@ -605,7 +710,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 stopTyping();
 
             }, 1500);
-
     }
 
 
@@ -614,6 +718,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ========================================================= */
 
     function stopTyping() {
+
+        console.log(
+            'CLIENT STOP TYPING'
+        );
+
 
         clearTimeout(typingTimer);
 
@@ -625,21 +734,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentlyTyping = false;
 
-
         sendTypingStatus(false);
-
     }
 
 
     /* =========================================================
-       Detect typing in textarea
+       Detect typing
     ========================================================= */
 
     if (messageInput) {
 
+        console.log(
+            'CLIENT: ATTACHING INPUT LISTENER'
+        );
+
+
         messageInput.addEventListener(
             'input',
             () => {
+
+                console.log(
+                    '===== CLIENT INPUT EVENT FIRED ====='
+                );
+
+                console.log(
+                    'Current value:',
+                    messageInput.value
+                );
+
 
                 if (!messageInput.value.trim()) {
 
@@ -659,16 +781,57 @@ document.addEventListener('DOMContentLoaded', () => {
             'blur',
             () => {
 
+                console.log(
+                    'CLIENT TEXTAREA BLUR'
+                );
+
                 stopTyping();
 
             }
+        );
+
+
+        /* =====================================================
+           Ctrl + Enter / Cmd + Enter
+        ===================================================== */
+
+        messageInput.addEventListener(
+            'keydown',
+            (event) => {
+
+                if (
+                    (event.ctrlKey || event.metaKey) &&
+                    event.key === 'Enter'
+                ) {
+
+                    event.preventDefault();
+
+
+                    if (
+                        messageInput.value.trim() &&
+                        messageForm
+                    ) {
+
+                        stopTyping();
+
+                        messageForm.submit();
+                    }
+                }
+
+            }
+        );
+
+    } else {
+
+        console.error(
+            'CLIENT: INPUT LISTENER NOT ATTACHED BECAUSE TEXTAREA IS MISSING.'
         );
 
     }
 
 
     /* =========================================================
-       Stop typing when sending message
+       Stop typing when submitting
     ========================================================= */
 
     if (messageForm) {
@@ -677,22 +840,25 @@ document.addEventListener('DOMContentLoaded', () => {
             'submit',
             () => {
 
+                console.log(
+                    'CLIENT MESSAGE FORM SUBMITTED'
+                );
+
                 stopTyping();
 
             }
         );
-
     }
 
 
     /* =========================================================
-       Make sure Echo is available
+       Check Laravel Echo
     ========================================================= */
 
     if (!window.Echo) {
 
         console.error(
-            'Laravel Echo is not available.'
+            'CLIENT ERROR: Laravel Echo is not available.'
         );
 
 
@@ -705,7 +871,6 @@ document.addEventListener('DOMContentLoaded', () => {
             realtimeIndicator.classList.add(
                 'bg-[#914f49]'
             );
-
         }
 
 
@@ -713,7 +878,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             realtimeText.textContent =
                 'Live messages are unavailable.';
-
         }
 
 
@@ -721,14 +885,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    console.log(
+        'CLIENT: Laravel Echo is available.'
+    );
+
+
     /* =========================================================
-       Make sure messages container exists
+       Check messages container
     ========================================================= */
 
     if (!messagesContainer) {
 
         console.error(
-            'Messages container was not found.'
+            'CLIENT ERROR: Messages container was not found.'
         );
 
         return;
@@ -736,7 +905,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* =========================================================
-       Subscribe to private case channel
+       Private channel
     ========================================================= */
 
     const channelName =
@@ -744,7 +913,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     console.log(
-        `Subscribing to private channel: ${channelName}`
+        'CLIENT SUBSCRIBING TO:',
+        channelName
     );
 
 
@@ -753,13 +923,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* =========================================================
-       Successfully subscribed
+       Successful subscription
     ========================================================= */
 
     channel.subscribed(() => {
 
         console.log(
-            `Successfully subscribed to ${channelName}`
+            `CLIENT SUCCESSFULLY SUBSCRIBED TO ${channelName}`
         );
 
 
@@ -773,7 +943,6 @@ document.addEventListener('DOMContentLoaded', () => {
             realtimeIndicator.classList.add(
                 'bg-[#52745a]'
             );
-
         }
 
 
@@ -781,7 +950,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             realtimeText.textContent =
                 'Live messages connected.';
-
         }
 
     });
@@ -794,7 +962,7 @@ document.addEventListener('DOMContentLoaded', () => {
     channel.error((error) => {
 
         console.error(
-            'Pusher channel error:',
+            'CLIENT PUSHER CHANNEL ERROR:',
             error
         );
 
@@ -809,7 +977,6 @@ document.addEventListener('DOMContentLoaded', () => {
             realtimeIndicator.classList.add(
                 'bg-[#914f49]'
             );
-
         }
 
 
@@ -817,14 +984,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             realtimeText.textContent =
                 'Unable to connect to live messages.';
-
         }
 
     });
 
 
     /* =========================================================
-       Listen for new messages
+       New messages
     ========================================================= */
 
     channel.listen(
@@ -832,14 +998,12 @@ document.addEventListener('DOMContentLoaded', () => {
         (event) => {
 
             console.log(
-                'New message received:',
+                'CLIENT NEW MESSAGE RECEIVED:',
                 event
             );
 
 
-            /* =================================================
-               Prevent duplicate messages
-            ================================================= */
+            /* Prevent duplicates */
 
             if (
                 document.querySelector(
@@ -851,27 +1015,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
 
-            /* =================================================
-               Remove empty state
-            ================================================= */
+            /* Remove empty state */
 
             if (noMessages) {
 
                 noMessages.remove();
-
             }
 
 
-            /* =================================================
-               Hide typing indicator
-            ================================================= */
+            /* Hide typing */
 
             hideTypingIndicator();
 
 
-            /* =================================================
-               Determine sender
-            ================================================= */
+            /* Determine sender */
 
             const isMine =
                 Number(event.sender_id) ===
@@ -884,9 +1041,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     : (event.sender ?? 'Lawyer');
 
 
-            /* =================================================
-               Format date
-            ================================================= */
+            /* Format date */
 
             let formattedDate = '';
 
@@ -899,25 +1054,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 formattedDate =
                     date.toLocaleString([], {
-
                         month: 'short',
-
                         day: '2-digit',
-
                         year: 'numeric',
-
                         hour: '2-digit',
-
                         minute: '2-digit'
-
                     });
-
             }
 
 
-            /* =================================================
-               Create message wrapper
-            ================================================= */
+            /* Create wrapper */
 
             const wrapper =
                 document.createElement('div');
@@ -935,9 +1081,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }`;
 
 
-            /* =================================================
-               Create message HTML
-            ================================================= */
+            /* Create message HTML */
 
             wrapper.innerHTML = `
 
@@ -960,13 +1104,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${
                             formattedDate
                                 ? `
-
                                     <span
                                         class="text-[9px] text-[#aaa59c]"
                                     >
                                         ${escapeHtml(formattedDate)}
                                     </span>
-
                                 `
                                 : ''
                         }
@@ -985,7 +1127,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${
                             event.subject
                                 ? `
-
                                     <p
                                         class="mb-2 text-xs font-semibold ${
                                             isMine
@@ -995,7 +1136,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                     >
                                         ${escapeHtml(event.subject)}
                                     </p>
-
                                 `
                                 : ''
                         }
@@ -1018,9 +1158,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
 
-            /* =================================================
-               Add message BEFORE typing indicator
-            ================================================= */
+            /* Add message */
 
             if (messagesList) {
 
@@ -1029,13 +1167,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
 
                 messagesContainer.appendChild(wrapper);
-
             }
 
 
-            /* =================================================
-               Scroll to newest message
-            ================================================= */
+            /* Scroll */
 
             messagesContainer.scrollTop =
                 messagesContainer.scrollHeight;
@@ -1045,7 +1180,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* =========================================================
-       Listen for typing events
+       Typing events
+       
+       IMPORTANT:
+       Client reacts ONLY to lawyer typing.
     ========================================================= */
 
     channel.listen(
@@ -1053,14 +1191,50 @@ document.addEventListener('DOMContentLoaded', () => {
         (event) => {
 
             console.log(
+                '=========================================='
+            );
+
+            console.log(
                 'CLIENT RECEIVED TYPING EVENT:',
                 event
             );
 
+            console.log(
+                'Event user ID:',
+                event.user_id
+            );
 
-            /* =================================================
-               Ignore our own typing event
-            ================================================= */
+            console.log(
+                'Current client ID:',
+                currentUserId
+            );
+
+            console.log(
+                'Event role:',
+                event.role
+            );
+
+            console.log(
+                'Event typing:',
+                event.typing
+            );
+
+            console.log(
+                'Event case ID:',
+                event.case_id
+            );
+
+            console.log(
+                'Current case ID:',
+                caseId
+            );
+
+            console.log(
+                '=========================================='
+            );
+
+
+            /* Ignore own event */
 
             if (
                 Number(event.user_id) ===
@@ -1068,21 +1242,19 @@ document.addEventListener('DOMContentLoaded', () => {
             ) {
 
                 console.log(
-                    'Ignoring own typing event.'
+                    'CLIENT: ignoring own typing event.'
                 );
 
                 return;
             }
 
 
-            /* =================================================
-               Client reacts only to lawyer typing
-            ================================================= */
+            /* Client only reacts to lawyer */
 
             if (event.role !== 'lawyer') {
 
                 console.log(
-                    'Ignoring non-lawyer typing event:',
+                    'CLIENT: ignoring non-lawyer typing event:',
                     event.role
                 );
 
@@ -1090,19 +1262,33 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
 
-            /* =================================================
-               Lawyer started typing
-            ================================================= */
+            /* Verify case */
+
+            if (
+                event.case_id &&
+                Number(event.case_id) !==
+                Number(caseId)
+            ) {
+
+                console.log(
+                    'CLIENT: ignoring typing event from another case:',
+                    event.case_id
+                );
+
+                return;
+            }
+
+
+            /* Lawyer started typing */
 
             if (event.typing === true) {
 
                 const name =
-                    event.user_name ??
-                    'Lawyer';
+                    event.user_name ?? 'Lawyer';
 
 
                 console.log(
-                    'LAWYER IS TYPING:',
+                    'CLIENT: LAWYER IS TYPING:',
                     name
                 );
 
@@ -1113,22 +1299,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
 
-            /* =================================================
-               Lawyer stopped typing
-            ================================================= */
+            /* Lawyer stopped typing */
 
             if (event.typing === false) {
 
                 console.log(
-                    'LAWYER STOPPED TYPING'
+                    'CLIENT: LAWYER STOPPED TYPING'
                 );
 
 
                 hideTypingIndicator();
-
             }
 
         }
+    );
+
+
+    console.log(
+        'CLIENT MESSAGE SCRIPT INITIALIZATION COMPLETE'
     );
 
 });

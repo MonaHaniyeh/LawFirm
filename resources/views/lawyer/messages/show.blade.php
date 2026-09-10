@@ -1,107 +1,58 @@
 @extends('layouts.app')
 
-@section('title', 'Conversation · Law Firm')
+@section('title', 'Conversation')
+
+@section('breadcrumb')
+    Messages
+@endsection
 
 @section('content')
 
-@php
-    $client = $case->client;
+    <div class="mx-auto max-w-4xl space-y-6">
 
-    $clientName = $client?->name ?? 'Client';
+        {{-- ========================================================= --}}
+        {{-- Header --}}
+        {{-- ========================================================= --}}
 
-    $initial = strtoupper(
-        substr(trim($clientName), 0, 1)
-    );
-@endphp
+        <div class="rounded-xl border border-[#ddd7ca] bg-[#f7f4ed] p-5 sm:p-6">
 
-<div class="min-h-screen bg-[#F7F4ED] text-[#181815]">
+            <div class="flex items-start gap-4">
 
-    <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-
-        {{-- ===================================================== --}}
-        {{-- HEADER --}}
-        {{-- ===================================================== --}}
-
-        <div class="mb-6">
-
-            <a
-                href="{{ route('lawyer.messages.index') }}"
-                class="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#77756F] transition hover:text-[#B89452]"
-            >
-                <svg
-                    class="h-3.5 w-3.5"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.7"
-                    viewBox="0 0 24 24"
+                {{-- Back --}}
+                <a
+                    href="{{ route('lawyer.messages.index') }}"
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#ddd7ca] bg-white text-[#77736b] transition hover:bg-[#f0ece4]"
+                    title="Back to messages"
                 >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15 19l-7-7 7-7"
-                    />
-                </svg>
+                    ←
+                </a>
 
-                Messages
-            </a>
+                {{-- Client information --}}
+                <div class="min-w-0 flex-1">
 
-            <div class="mt-5">
+                    <p class="text-[11px] font-medium uppercase tracking-[0.16em] text-[#77736b]">
+                        Conversation
+                    </p>
 
-                <div
-                    class="text-[10px] font-bold uppercase tracking-[0.22em] text-[#B89452]"
-                >
-                    Client Communication
-                </div>
+                    <h1 class="mt-1 break-words text-xl font-semibold text-[#151515]">
+                        {{ $case->client?->name ?? 'Client' }}
+                    </h1>
 
-                <div
-                    class="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
-                >
+                    <div class="mt-2 flex flex-wrap items-center gap-2">
 
-                    <div>
+                        <span class="text-[11px] font-medium text-[#8b7041]">
+                            Case {{ $case->case_number }}
+                        </span>
 
-                        <h1
-                            class="font-serif text-4xl font-semibold tracking-tight text-[#181815]"
-                        >
-                            Conversation
-                        </h1>
+                        <span class="text-[#c9c3b8]">
+                            •
+                        </span>
 
-                        <p
-                            class="mt-2 text-[11px] text-[#77756F]"
-                        >
-                            Continue your conversation regarding this case.
-                        </p>
+                        <span class="text-[11px] text-[#77736b]">
+                            {{ $case->case_type ?? 'Legal Case' }}
+                        </span>
 
                     </div>
-
-                    {{-- REPLY BUTTON --}}
-                    <a
-                        href="{{ route('lawyer.messages.reply.form', $case) }}"
-                        class="inline-flex h-10 items-center justify-center gap-2 bg-[#181815] px-5 text-[9px] font-bold uppercase tracking-[0.1em] text-white transition hover:bg-[#B89452]"
-                    >
-
-                        <svg
-                            class="h-3.5 w-3.5"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.7"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M21.5 4.5L12 14"
-                            />
-
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M21.5 4.5l-6 17-3.5-7.5L4.5 10l17-5.5z"
-                            />
-                        </svg>
-
-                        Reply
-
-                    </a>
 
                 </div>
 
@@ -110,304 +61,324 @@
         </div>
 
 
-        {{-- ===================================================== --}}
-        {{-- REAL-TIME STATUS --}}
-        {{-- ===================================================== --}}
+        {{-- ========================================================= --}}
+        {{-- Status --}}
+        {{-- ========================================================= --}}
+
+        @if (session('status'))
+
+            <div
+                x-data="{ show: true }"
+                x-show="show"
+                class="flex items-start justify-between gap-4 rounded-lg border border-[#cddbcf] bg-[#f1f7f2] px-4 py-3 text-xs text-[#52745a]"
+            >
+
+                <span>
+                    {{ session('status') }}
+                </span>
+
+                <button
+                    type="button"
+                    @click="show = false"
+                    class="shrink-0"
+                >
+                    ×
+                </button>
+
+            </div>
+
+        @endif
+
+
+        {{-- ========================================================= --}}
+        {{-- Validation errors --}}
+        {{-- ========================================================= --}}
+
+        @if ($errors->any())
+
+            <div class="rounded-lg border border-[#ead0cd] bg-[#fbf3f2] px-4 py-3 text-xs text-[#914f49]">
+
+                <p class="font-semibold">
+                    Please check your message.
+                </p>
+
+                <ul class="mt-1 list-disc pl-4">
+
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+
+                </ul>
+
+            </div>
+
+        @endif
+
+
+        {{-- ========================================================= --}}
+        {{-- Real-time connection status --}}
+        {{-- ========================================================= --}}
 
         <div
             id="realtime-status"
-            class="mb-4 flex items-center gap-2 border border-[#D4D1CA] bg-white px-4 py-3"
+            class="flex items-center gap-2 rounded-lg border border-[#ddd7ca] bg-white px-4 py-3 text-xs text-[#77736b]"
         >
 
             <span
                 id="realtime-indicator"
-                class="h-2 w-2 rounded-full bg-[#AAA59C]"
+                class="h-2 w-2 rounded-full bg-[#aaa59c]"
             ></span>
 
-            <span
-                id="realtime-text"
-                class="text-[9px] font-semibold uppercase tracking-[0.1em] text-[#77756F]"
-            >
+            <span id="realtime-text">
                 Connecting to live messages...
             </span>
 
         </div>
 
 
-        {{-- ===================================================== --}}
-        {{-- CHAT PANEL --}}
-        {{-- ===================================================== --}}
+        {{-- ========================================================= --}}
+        {{-- Conversation --}}
+        {{-- ========================================================= --}}
 
-        <section
-            class="overflow-hidden border border-[#D4D1CA] bg-white shadow-sm"
-        >
+        <section class="overflow-hidden rounded-xl border border-[#ddd7ca] bg-white">
 
-            {{-- ================================================= --}}
-            {{-- CLIENT HEADER --}}
-            {{-- ================================================= --}}
+            {{-- Conversation header --}}
+            <div class="border-b border-[#ddd7ca] px-5 py-4">
 
-            <div
-                class="flex min-h-[72px] items-center justify-between border-b border-[#E8E6E1] px-5 sm:px-6"
-            >
+                <h2 class="text-sm font-semibold text-[#151515]">
+                    Messages
+                </h2>
 
-                <div
-                    class="flex min-w-0 items-center gap-3"
-                >
-
-                    {{-- CLIENT INITIAL --}}
-                    <div
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#181815] font-serif text-base font-semibold text-[#D8BE8A]"
-                    >
-                        {{ $initial }}
-                    </div>
-
-                    <div class="min-w-0">
-
-                        <div
-                            class="truncate text-[12px] font-semibold text-[#181815]"
-                        >
-                            {{ $clientName }}
-                        </div>
-
-                        <div
-                            class="mt-1 text-[9px] uppercase tracking-[0.12em] text-[#B89452]"
-                        >
-                            Case #{{ $case->case_number }}
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {{-- CASE LINK --}}
-
-                <a
-                    href="{{ route('lawyer.cases.show', $case) }}"
-                    class="hidden items-center gap-1.5 border border-[#D4D1CA] px-3 py-2 text-[9px] font-bold uppercase tracking-[0.08em] text-[#41403C] transition hover:border-[#B89452] hover:text-[#B89452] sm:flex"
-                >
-
-                    View Case
-
-                    <svg
-                        class="h-3 w-3"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.7"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M9 5l7 7-7 7"
-                        />
-                    </svg>
-
-                </a>
+                <p class="mt-1 text-xs text-[#77736b]">
+                    Your conversation with
+                    {{ $case->client?->name ?? 'your client' }}.
+                </p>
 
             </div>
 
 
-            {{-- ================================================= --}}
-            {{-- TYPING INDICATOR --}}
-            {{-- ================================================= --}}
-
-            <div
-                id="typing-indicator"
-                class="hidden border-b border-[#E8E6E1] bg-[#FAF9F6] px-5 py-3 sm:px-7"
-            >
-
-                <div
-                    class="flex items-center gap-2 text-[11px] text-[#77756F]"
-                >
-
-                    <span
-                        class="inline-flex items-center gap-1.5 rounded-full border border-[#DDD7CA] bg-[#F7F4ED] px-3 py-1.5"
-                    >
-
-                        <span
-                            class="h-1.5 w-1.5 animate-pulse rounded-full bg-[#8B7041]"
-                        ></span>
-
-                        <span id="typing-text">
-                            Client is typing...
-                        </span>
-
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            {{-- ================================================= --}}
-            {{-- MESSAGES --}}
-            {{-- ================================================= --}}
+            {{-- ===================================================== --}}
+            {{-- Messages area --}}
+            {{-- ===================================================== --}}
 
             <div
                 id="messages-container"
-                class="max-h-[560px] min-h-[420px] space-y-5 overflow-y-auto bg-[#FAF9F6] px-4 py-6 sm:px-7"
+                class="min-h-[420px] space-y-5 p-5 sm:p-6"
             >
 
-                @forelse($messages as $message)
+                {{-- Existing messages --}}
+                <div
+                    id="messages-list"
+                    class="space-y-5"
+                >
 
-                    @php
-                        $isLawyer =
-                            (int) $message->sender_id ===
-                            (int) Auth::id();
-                    @endphp
+                    @forelse($messages as $conversationMessage)
 
-                    <div
-                        class="flex {{ $isLawyer ? 'justify-end' : 'justify-start' }}"
-                        data-message-id="{{ $message->id }}"
-                    >
+                        @php
+                            $isMine =
+                                (int) $conversationMessage->sender_id ===
+                                (int) auth()->id();
+                        @endphp
 
-                        <div class="max-w-[82%] sm:max-w-[68%]">
+                        <div
+                            data-message-id="{{ $conversationMessage->id }}"
+                            class="flex {{ $isMine ? 'justify-end' : 'justify-start' }}"
+                        >
 
-                            {{-- SENDER --}}
+                            <div class="max-w-[85%] sm:max-w-[70%]">
 
-                            <div
-                                class="mb-1.5 flex items-center gap-2 {{ $isLawyer ? 'justify-end' : 'justify-start' }}"
-                            >
-
-                                <span
-                                    class="text-[8px] font-bold uppercase tracking-[0.1em] text-[#9B9992]"
+                                {{-- Sender --}}
+                                <div
+                                    class="mb-1 flex items-center gap-2 {{ $isMine ? 'justify-end' : 'justify-start' }}"
                                 >
-                                    {{
-                                        $isLawyer
-                                            ? 'You'
-                                            : ($message->sender?->name ?? 'Client')
-                                    }}
-                                </span>
 
-                            </div>
+                                    <span class="text-[10px] font-medium text-[#77736b]">
+                                        {{ $isMine ? 'You' : ($conversationMessage->sender?->name ?? 'Client') }}
+                                    </span>
+
+                                    @if ($conversationMessage->created_at)
+
+                                        <span class="text-[9px] text-[#aaa59c]">
+                                            {{ $conversationMessage->created_at->format('M d, Y · h:i A') }}
+                                        </span>
+
+                                    @endif
+
+                                </div>
 
 
-                            {{-- MESSAGE BUBBLE --}}
+                                {{-- Message bubble --}}
+                                <div
+                                    class="rounded-2xl px-4 py-3
+                                    {{ $isMine
+                                        ? 'rounded-br-md bg-[#151515] text-white'
+                                        : 'rounded-bl-md border border-[#ddd7ca] bg-[#f7f4ed] text-[#151515]' }}"
+                                >
 
-                            <div
-                                class="
-                                    px-4 py-3 text-[11px] leading-5
-                                    {{
-                                        $isLawyer
-                                            ? 'rounded-[12px_3px_12px_12px] bg-[#181815] text-white'
-                                            : 'rounded-[3px_12px_12px_12px] border border-[#E8E6E1] bg-white text-[#41403C]'
-                                    }}
-                            >
+                                    @if ($conversationMessage->subject)
 
-                                @if($message->subject)
+                                        <p
+                                            class="mb-2 text-xs font-semibold
+                                            {{ $isMine ? 'text-white' : 'text-[#151515]' }}"
+                                        >
+                                            {{ $conversationMessage->subject }}
+                                        </p>
+
+                                    @endif
 
                                     <p
-                                        class="mb-2 text-[10px] font-bold uppercase tracking-[0.08em] {{ $isLawyer ? 'text-[#D8BE8A]' : 'text-[#B89452]' }}"
+                                        class="whitespace-pre-line break-words text-sm leading-6
+                                        {{ $isMine ? 'text-white' : 'text-[#55514b]' }}"
                                     >
-                                        {{ $message->subject }}
+                                        {{ $conversationMessage->content }}
                                     </p>
 
-                                @endif
-
-                                <div
-                                    class="whitespace-pre-line break-words"
-                                >
-                                    {{ $message->content }}
                                 </div>
 
                             </div>
 
-
-                            {{-- TIME --}}
-
-                            <div
-                                class="mt-1.5 text-[8px] text-[#9B9992] {{ $isLawyer ? 'text-right' : 'text-left' }}"
-                            >
-                                {{ $message->created_at->format('d M Y · g:i A') }}
-                            </div>
-
                         </div>
 
-                    </div>
+                    @empty
 
-                @empty
-
-                    {{-- EMPTY STATE --}}
-
-                    <div
-                        id="no-messages"
-                        class="flex min-h-[350px] items-center justify-center text-center"
-                    >
-
-                        <div>
+                        <div
+                            id="no-messages"
+                            class="py-10 text-center"
+                        >
 
                             <div
-                                class="mx-auto flex h-11 w-11 items-center justify-center rounded-full border border-[#D4D1CA] text-[#B89452]"
+                                class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#f5f1e8] text-[#8b7041]"
                             >
-
-                                <svg
-                                    class="h-5 w-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.5"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M8 10h8M8 14h5m-8 5l-3 2 1-4.5A8 8 0 013 9.5C3 5.91 6.58 3 11 3h2c4.42 0 8 2.91 8 6.5S17.42 16 13 16h-2c-1.18 0-2.3-.2-3.3-.57L5 19z"
-                                    />
-                                </svg>
-
+                                ✉
                             </div>
 
-                            <p
-                                class="mt-3 text-[11px] text-[#77756F]"
-                            >
-                                No messages yet.
+                            <h3 class="mt-4 text-sm font-semibold text-[#151515]">
+                                No messages yet
+                            </h3>
+
+                            <p class="mt-2 text-xs text-[#77736b]">
+                                Start the conversation below.
                             </p>
 
                         </div>
 
+                    @endforelse
+
+                </div>
+
+
+                {{-- ================================================= --}}
+                {{-- Typing indicator --}}
+                {{-- ================================================= --}}
+
+                <div
+                    id="typing-indicator"
+                    class="hidden pt-1"
+                >
+
+                    <div class="flex items-end gap-2">
+
+                        {{-- Client avatar --}}
+                        <div
+                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#151515] text-[11px] font-semibold text-[#B89452]"
+                        >
+                            C
+                        </div>
+
+
+                        {{-- Typing bubble --}}
+                        <div
+                            class="rounded-2xl rounded-bl-md border border-[#E8E6E1] bg-white px-4 py-2.5 shadow-sm"
+                        >
+
+                            <div class="flex items-center gap-2">
+
+                                <span
+                                    id="typing-text"
+                                    class="text-xs text-[#77756F]"
+                                >
+                                    Client is typing...
+                                </span>
+
+                                {{-- Animated dots --}}
+                                <span class="flex items-center gap-1">
+
+                                    <span
+                                        class="h-1.5 w-1.5 animate-bounce rounded-full bg-[#B89452]"
+                                    ></span>
+
+                                    <span
+                                        class="h-1.5 w-1.5 animate-bounce rounded-full bg-[#B89452]"
+                                        style="animation-delay: 150ms"
+                                    ></span>
+
+                                    <span
+                                        class="h-1.5 w-1.5 animate-bounce rounded-full bg-[#B89452]"
+                                        style="animation-delay: 300ms"
+                                    ></span>
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
                     </div>
 
-                @endforelse
+                </div>
 
             </div>
 
 
-            {{-- ================================================= --}}
-            {{-- REPLY ACTION --}}
-            {{-- ================================================= --}}
+            {{-- ===================================================== --}}
+            {{-- Reply --}}
+            {{-- ===================================================== --}}
 
-            <div
-                class="border-t border-[#E8E6E1] bg-white p-4 sm:p-5"
-            >
+            <div class="border-t border-[#ddd7ca] bg-[#faf8f3] p-5 sm:p-6">
 
-                <a
-                    href="{{ route('lawyer.messages.reply.form', $case) }}"
-                    class="flex h-11 w-full items-center justify-center gap-2 bg-[#181815] text-[9px] font-bold uppercase tracking-[0.1em] text-white transition hover:bg-[#B89452]"
+                <form
+                    id="message-form"
+                    method="POST"
+                    action="{{ route('lawyer.messages.reply', $case) }}"
                 >
 
-                    <svg
-                        class="h-3.5 w-3.5"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.7"
-                        viewBox="0 0 24 24"
+                    @csrf
+
+                    <label
+                        for="content"
+                        class="mb-2 block text-xs font-semibold text-[#151515]"
                     >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M21.5 4.5L12 14"
-                        />
+                        Reply to client
+                    </label>
 
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M21.5 4.5l-6 17-3.5-7.5L4.5 10l17-5.5z"
-                        />
-                    </svg>
 
-                    Reply to {{ $clientName }}
+                    <textarea
+                        id="content"
+                        name="content"
+                        rows="4"
+                        maxlength="5000"
+                        required
+                        placeholder="Write your message..."
+                        class="w-full rounded-xl border border-[#ddd7ca] bg-white px-4 py-3 text-sm text-[#151515] outline-none transition placeholder:text-[#aaa59c] focus:border-[#8b7041] focus:ring-1 focus:ring-[#8b7041]"
+                    >{{ old('content') }}</textarea>
 
-                </a>
+
+                    <div class="mt-3 flex items-center justify-between gap-4">
+
+                        <p class="text-[10px] text-[#aaa59c]">
+                            Press Ctrl + Enter to send
+                        </p>
+
+                        <button
+                            type="submit"
+                            class="inline-flex items-center rounded-lg bg-[#151515] px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-[#2a2a2a]"
+                        >
+                            Send message
+                        </button>
+
+                    </div>
+
+                </form>
 
             </div>
 
@@ -415,13 +386,11 @@
 
     </div>
 
-</div>
-
 @endsection
 
 
 {{-- ============================================================= --}}
-{{-- LARAVEL ECHO / PUSHER --}}
+{{-- Laravel Echo / Pusher --}}
 {{-- ============================================================= --}}
 
 @push('scripts')
@@ -430,25 +399,33 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Current case
-    |--------------------------------------------------------------------------
-    */
+    console.log('======================================');
+    console.log('LAWYER MESSAGE SCRIPT LOADED');
+    console.log('======================================');
+
+
+    /* =========================================================
+       Current case and user
+    ========================================================= */
 
     const caseId = @json($case->id);
 
     const currentUserId = @json(auth()->id());
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | DOM elements
-    |--------------------------------------------------------------------------
-    */
+    console.log('Lawyer case ID:', caseId);
+    console.log('Lawyer user ID:', currentUserId);
+
+
+    /* =========================================================
+       Elements
+    ========================================================= */
 
     const messagesContainer =
         document.getElementById('messages-container');
+
+    const messagesList =
+        document.getElementById('messages-list');
 
     const noMessages =
         document.getElementById('no-messages');
@@ -465,438 +442,93 @@ document.addEventListener('DOMContentLoaded', () => {
     const typingText =
         document.getElementById('typing-text');
 
+    const messageInput =
+        document.getElementById('content');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Check Echo
-    |--------------------------------------------------------------------------
-    */
-
-    if (!window.Echo) {
-
-        console.error(
-            'Laravel Echo is not available.'
-        );
-
-        if (realtimeIndicator) {
-
-            realtimeIndicator.classList.remove(
-                'bg-[#AAA59C]'
-            );
-
-            realtimeIndicator.classList.add(
-                'bg-[#914F49]'
-            );
-        }
-
-        if (realtimeText) {
-
-            realtimeText.textContent =
-                'Live messages unavailable.';
-        }
-
-        return;
-    }
+    const messageForm =
+        document.getElementById('message-form');
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Check messages container
-    |--------------------------------------------------------------------------
-    */
-
-    if (!messagesContainer) {
-
-        console.error(
-            'Messages container was not found.'
-        );
-
-        return;
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Subscribe to private case channel
-    |--------------------------------------------------------------------------
-    */
-
-    const channelName =
-        `case.${caseId}`;
-
+    /* =========================================================
+       Check required elements
+    ========================================================= */
 
     console.log(
-        `Subscribing to private channel: ${channelName}`
+        'LAWYER TEXTAREA FOUND:',
+        messageInput
+    );
+
+    console.log(
+        'LAWYER MESSAGE FORM FOUND:',
+        messageForm
+    );
+
+    console.log(
+        'LAWYER TYPING INDICATOR FOUND:',
+        typingIndicator
     );
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Private Echo channel
-    |--------------------------------------------------------------------------
-    */
+    /* =========================================================
+       Typing variables
+    ========================================================= */
 
-    const channel =
-        window.Echo.private(channelName);
+    let typingTimer = null;
+
+    let currentlyTyping = false;
+
+    let remoteTypingTimer = null;
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Successfully subscribed
-    |--------------------------------------------------------------------------
-    */
+    /* =========================================================
+       Hide typing indicator
+    ========================================================= */
 
-    channel.subscribed(() => {
+    function hideTypingIndicator() {
 
-        console.log(
-            `Successfully subscribed to ${channelName}`
-        );
-
-        if (realtimeIndicator) {
-
-            realtimeIndicator.classList.remove(
-                'bg-[#AAA59C]',
-                'bg-[#914F49]'
-            );
-
-            realtimeIndicator.classList.add(
-                'bg-[#52745A]'
-            );
+        if (!typingIndicator) {
+            return;
         }
 
-        if (realtimeText) {
+        typingIndicator.classList.add('hidden');
 
-            realtimeText.textContent =
-                'Live messages connected.';
-        }
-
-    });
+        clearTimeout(remoteTypingTimer);
+    }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Subscription error
-    |--------------------------------------------------------------------------
-    */
+    /* =========================================================
+       Show typing indicator
+    ========================================================= */
 
-    channel.error((error) => {
+    function showTypingIndicator(name = 'Client') {
 
-        console.error(
-            'Pusher channel error:',
-            error
-        );
+        if (!typingIndicator || !typingText) {
 
-        if (realtimeIndicator) {
-
-            realtimeIndicator.classList.remove(
-                'bg-[#AAA59C]',
-                'bg-[#52745A]'
+            console.error(
+                'Typing indicator elements not found.'
             );
 
-            realtimeIndicator.classList.add(
-                'bg-[#914F49]'
-            );
+            return;
         }
 
-        if (realtimeText) {
+        typingText.textContent =
+            `${name} is typing...`;
 
-            realtimeText.textContent =
-                'Unable to connect to live messages.';
-        }
+        typingIndicator.classList.remove('hidden');
 
-    });
+        clearTimeout(remoteTypingTimer);
 
+        remoteTypingTimer = setTimeout(() => {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Listen for new messages
-    |--------------------------------------------------------------------------
-    */
+            hideTypingIndicator();
 
-    channel.listen(
-        '.message.sent',
-        (event) => {
+        }, 2500);
+    }
 
-            console.log(
-                'New message received:',
-                event
-            );
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | Prevent duplicate messages
-            |--------------------------------------------------------------------------
-            */
-
-            if (
-                document.querySelector(
-                    `[data-message-id="${event.id}"]`
-                )
-            ) {
-
-                return;
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Remove empty state
-            |--------------------------------------------------------------------------
-            */
-
-            if (noMessages) {
-
-                noMessages.remove();
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Determine sender
-            |--------------------------------------------------------------------------
-            */
-
-            const isLawyer =
-                Number(event.sender_id) ===
-                Number(currentUserId);
-
-
-            const senderName =
-                isLawyer
-                    ? 'You'
-                    : (event.sender ?? 'Client');
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Format date
-            |--------------------------------------------------------------------------
-            */
-
-            let formattedDate = '';
-
-
-            if (event.created_at) {
-
-                const date =
-                    new Date(event.created_at);
-
-                formattedDate =
-                    date.toLocaleString([], {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                        hour: 'numeric',
-                        minute: '2-digit'
-                    });
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Create message wrapper
-            |--------------------------------------------------------------------------
-            */
-
-            const wrapper =
-                document.createElement('div');
-
-
-            wrapper.dataset.messageId =
-                event.id;
-
-
-            wrapper.className =
-                `flex ${
-                    isLawyer
-                        ? 'justify-end'
-                        : 'justify-start'
-                }`;
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Message HTML
-            |--------------------------------------------------------------------------
-            */
-
-            wrapper.innerHTML = `
-
-                <div class="max-w-[82%] sm:max-w-[68%]">
-
-                    <div
-                        class="mb-1.5 flex items-center gap-2 ${
-                            isLawyer
-                                ? 'justify-end'
-                                : 'justify-start'
-                        }"
-                    >
-
-                        <span
-                            class="text-[8px] font-bold uppercase tracking-[0.1em] text-[#9B9992]"
-                        >
-                            ${escapeHtml(senderName)}
-                        </span>
-
-                    </div>
-
-
-                    <div
-                        class="
-                            px-4 py-3 text-[11px] leading-5
-                            ${
-                                isLawyer
-                                    ? 'rounded-[12px_3px_12px_12px] bg-[#181815] text-white'
-                                    : 'rounded-[3px_12px_12px_12px] border border-[#E8E6E1] bg-white text-[#41403C]'
-                            }
-                        "
-                    >
-
-                        ${
-                            event.subject
-                                ? `
-                                    <p
-                                        class="mb-2 text-[10px] font-bold uppercase tracking-[0.08em] ${
-                                            isLawyer
-                                                ? 'text-[#D8BE8A]'
-                                                : 'text-[#B89452]'
-                                        }"
-                                    >
-                                        ${escapeHtml(event.subject)}
-                                    </p>
-                                `
-                                : ''
-                        }
-
-                        <div
-                            class="whitespace-pre-line break-words"
-                        >
-                            ${escapeHtml(event.content)}
-                        </div>
-
-                    </div>
-
-
-                    <div
-                        class="mt-1.5 text-[8px] text-[#9B9992] ${
-                            isLawyer
-                                ? 'text-right'
-                                : 'text-left'
-                        }"
-                    >
-                        ${escapeHtml(formattedDate)}
-                    </div>
-
-                </div>
-
-            `;
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Add message
-            |--------------------------------------------------------------------------
-            */
-
-            messagesContainer.appendChild(
-                wrapper
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Scroll to newest message
-            |--------------------------------------------------------------------------
-            */
-
-            messagesContainer.scrollTop =
-                messagesContainer.scrollHeight;
-
-        }
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Listen for typing indicator
-    |--------------------------------------------------------------------------
-    */
-
-    channel.listen(
-        '.user.typing',
-        (event) => {
-
-            console.log(
-                'Typing event received:',
-                event
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Ignore our own typing event
-            |--------------------------------------------------------------------------
-            */
-
-            if (
-                Number(event.user_id) ===
-                Number(currentUserId)
-            ) {
-
-                return;
-            }
-
-
-            if (
-                !typingIndicator ||
-                !typingText
-            ) {
-
-                return;
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Show typing indicator
-            |--------------------------------------------------------------------------
-            */
-
-            if (event.typing) {
-
-                typingText.textContent =
-                    `${event.user_name ?? 'Client'} is typing...`;
-
-                typingIndicator.classList.remove(
-                    'hidden'
-                );
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Hide typing indicator
-            |--------------------------------------------------------------------------
-            */
-
-            else {
-
-                typingIndicator.classList.add(
-                    'hidden'
-                );
-            }
-
-        }
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Escape HTML
-    |--------------------------------------------------------------------------
-    */
+    /* =========================================================
+       Escape HTML
+    ========================================================= */
 
     function escapeHtml(value) {
 
@@ -908,6 +540,769 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return div.innerHTML;
     }
+
+
+    /* =========================================================
+       Send typing status to Laravel
+    ========================================================= */
+
+    async function sendTypingStatus(isTyping) {
+
+        console.log(
+            '======================================'
+        );
+
+        console.log(
+            'SEND TYPING STATUS:',
+            isTyping
+        );
+
+        console.log(
+            'Typing endpoint:',
+            "{{ route('lawyer.messages.typing') }}"
+        );
+
+        console.log(
+            'Case ID:',
+            caseId
+        );
+
+        console.log(
+            '======================================'
+        );
+
+
+        try {
+
+            const csrfTokenElement =
+                document.querySelector(
+                    'meta[name="csrf-token"]'
+                );
+
+
+            if (!csrfTokenElement) {
+
+                console.error(
+                    'CSRF token meta tag was not found.'
+                );
+
+                return;
+            }
+
+
+            const csrfToken =
+                csrfTokenElement.getAttribute('content');
+
+
+            console.log(
+                'CSRF token found:',
+                !!csrfToken
+            );
+
+
+            const response =
+                await fetch(
+                    "{{ route('lawyer.messages.typing') }}",
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+
+                        body: JSON.stringify({
+                            case_id: caseId,
+                            typing: isTyping,
+                        }),
+                    }
+                );
+
+
+            console.log(
+                'LAWYER TYPING FETCH COMPLETED'
+            );
+
+            console.log(
+                'Lawyer typing status sent:',
+                isTyping,
+                'HTTP:',
+                response.status
+            );
+
+
+            if (!response.ok) {
+
+                const responseText =
+                    await response.text();
+
+                console.error(
+                    'Typing request failed:',
+                    response.status,
+                    responseText
+                );
+
+                return;
+            }
+
+
+            console.log(
+                'Typing request succeeded.'
+            );
+
+        } catch (error) {
+
+            console.error(
+                'FAILED TO SEND LAWYER TYPING STATUS:',
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       Start typing
+    ========================================================= */
+
+    function startTyping() {
+
+        console.log(
+            '===== LAWYER START TYPING ====='
+        );
+
+
+        if (!currentlyTyping) {
+
+            currentlyTyping = true;
+
+            sendTypingStatus(true);
+        }
+
+
+        clearTimeout(typingTimer);
+
+
+        typingTimer =
+            setTimeout(() => {
+
+                stopTyping();
+
+            }, 1500);
+
+    }
+
+
+    /* =========================================================
+       Stop typing
+    ========================================================= */
+
+    function stopTyping() {
+
+        console.log(
+            '===== LAWYER STOP TYPING ====='
+        );
+
+
+        clearTimeout(typingTimer);
+
+
+        if (!currentlyTyping) {
+
+            return;
+        }
+
+
+        currentlyTyping = false;
+
+        sendTypingStatus(false);
+
+    }
+
+
+    /* =========================================================
+       Detect typing in textarea
+    ========================================================= */
+
+    if (messageInput) {
+
+        console.log(
+            '===== LAWYER TEXTAREA EVENT LISTENER ATTACHING ====='
+        );
+
+
+        messageInput.addEventListener(
+            'input',
+            () => {
+
+                console.log(
+                    '===== LAWYER INPUT EVENT FIRED =====',
+                    messageInput.value
+                );
+
+
+                if (!messageInput.value.trim()) {
+
+                    stopTyping();
+
+                    return;
+                }
+
+
+                startTyping();
+
+            }
+        );
+
+
+        messageInput.addEventListener(
+            'blur',
+            () => {
+
+                console.log(
+                    '===== LAWYER TEXTAREA BLURRED ====='
+                );
+
+                stopTyping();
+
+            }
+        );
+
+
+        /* =====================================================
+           Ctrl + Enter / Cmd + Enter
+        ===================================================== */
+
+        messageInput.addEventListener(
+            'keydown',
+            (event) => {
+
+                if (
+                    (event.ctrlKey || event.metaKey) &&
+                    event.key === 'Enter'
+                ) {
+
+                    event.preventDefault();
+
+
+                    if (
+                        messageInput.value.trim() &&
+                        messageForm
+                    ) {
+
+                        stopTyping();
+
+                        messageForm.submit();
+                    }
+
+                }
+
+            }
+        );
+
+    } else {
+
+        console.error(
+            '===== LAWYER TEXTAREA WAS NOT FOUND ====='
+        );
+
+    }
+
+
+    /* =========================================================
+       Stop typing when sending message
+    ========================================================= */
+
+    if (messageForm) {
+
+        messageForm.addEventListener(
+            'submit',
+            () => {
+
+                console.log(
+                    'LAWYER MESSAGE FORM SUBMITTED'
+                );
+
+                stopTyping();
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       Make sure Echo is available
+    ========================================================= */
+
+    if (!window.Echo) {
+
+        console.error(
+            'Laravel Echo is not available.'
+        );
+
+
+        if (realtimeIndicator) {
+
+            realtimeIndicator.classList.remove(
+                'bg-[#aaa59c]'
+            );
+
+            realtimeIndicator.classList.add(
+                'bg-[#914f49]'
+            );
+
+        }
+
+
+        if (realtimeText) {
+
+            realtimeText.textContent =
+                'Live messages are unavailable.';
+
+        }
+
+
+        return;
+    }
+
+
+    console.log(
+        'Laravel Echo is available.'
+    );
+
+
+    /* =========================================================
+       Make sure messages container exists
+    ========================================================= */
+
+    if (!messagesContainer) {
+
+        console.error(
+            'Messages container was not found.'
+        );
+
+        return;
+    }
+
+
+    /* =========================================================
+       Subscribe to private case channel
+    ========================================================= */
+
+    const channelName =
+        `case.${caseId}`;
+
+
+    console.log(
+        `Subscribing to private channel: ${channelName}`
+    );
+
+
+    const channel =
+        window.Echo.private(channelName);
+
+
+    /* =========================================================
+       Successfully subscribed
+    ========================================================= */
+
+    channel.subscribed(() => {
+
+        console.log(
+            `Successfully subscribed to ${channelName}`
+        );
+
+
+        if (realtimeIndicator) {
+
+            realtimeIndicator.classList.remove(
+                'bg-[#aaa59c]',
+                'bg-[#914f49]'
+            );
+
+            realtimeIndicator.classList.add(
+                'bg-[#52745a]'
+            );
+
+        }
+
+
+        if (realtimeText) {
+
+            realtimeText.textContent =
+                'Live messages connected.';
+
+        }
+
+    });
+
+
+    /* =========================================================
+       Subscription error
+    ========================================================= */
+
+    channel.error((error) => {
+
+        console.error(
+            'Pusher channel error:',
+            error
+        );
+
+
+        if (realtimeIndicator) {
+
+            realtimeIndicator.classList.remove(
+                'bg-[#aaa59c]',
+                'bg-[#52745a]'
+            );
+
+            realtimeIndicator.classList.add(
+                'bg-[#914f49]'
+            );
+
+        }
+
+
+        if (realtimeText) {
+
+            realtimeText.textContent =
+                'Unable to connect to live messages.';
+
+        }
+
+    });
+
+
+    /* =========================================================
+       Listen for new messages
+    ========================================================= */
+
+    channel.listen(
+        '.message.sent',
+        (event) => {
+
+            console.log(
+                'New message received:',
+                event
+            );
+
+
+            /* Prevent duplicate messages */
+
+            if (
+                document.querySelector(
+                    `[data-message-id="${event.id}"]`
+                )
+            ) {
+
+                return;
+            }
+
+
+            /* Remove empty state */
+
+            if (noMessages) {
+
+                noMessages.remove();
+            }
+
+
+            /* Hide typing indicator */
+
+            hideTypingIndicator();
+
+
+            /* Determine sender */
+
+            const isMine =
+                Number(event.sender_id) ===
+                Number(currentUserId);
+
+
+            const senderName =
+                isMine
+                    ? 'You'
+                    : (event.sender ?? 'Client');
+
+
+            /* Format date */
+
+            let formattedDate = '';
+
+
+            if (event.created_at) {
+
+                const date =
+                    new Date(event.created_at);
+
+
+                formattedDate =
+                    date.toLocaleString([], {
+                        month: 'short',
+                        day: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+            }
+
+
+            /* Create message wrapper */
+
+            const wrapper =
+                document.createElement('div');
+
+
+            wrapper.dataset.messageId =
+                event.id;
+
+
+            wrapper.className =
+                `flex ${
+                    isMine
+                        ? 'justify-end'
+                        : 'justify-start'
+                }`;
+
+
+            /* Create message HTML */
+
+            wrapper.innerHTML = `
+
+                <div class="max-w-[85%] sm:max-w-[70%]">
+
+                    <div
+                        class="mb-1 flex items-center gap-2 ${
+                            isMine
+                                ? 'justify-end'
+                                : 'justify-start'
+                        }"
+                    >
+
+                        <span
+                            class="text-[10px] font-medium text-[#77736b]"
+                        >
+                            ${escapeHtml(senderName)}
+                        </span>
+
+                        ${
+                            formattedDate
+                                ? `
+                                    <span
+                                        class="text-[9px] text-[#aaa59c]"
+                                    >
+                                        ${escapeHtml(formattedDate)}
+                                    </span>
+                                `
+                                : ''
+                        }
+
+                    </div>
+
+
+                    <div
+                        class="rounded-2xl px-4 py-3 ${
+                            isMine
+                                ? 'rounded-br-md bg-[#151515] text-white'
+                                : 'rounded-bl-md border border-[#ddd7ca] bg-[#f7f4ed] text-[#151515]'
+                        }"
+                    >
+
+                        ${
+                            event.subject
+                                ? `
+                                    <p
+                                        class="mb-2 text-xs font-semibold ${
+                                            isMine
+                                                ? 'text-white'
+                                                : 'text-[#151515]'
+                                        }"
+                                    >
+                                        ${escapeHtml(event.subject)}
+                                    </p>
+                                `
+                                : ''
+                        }
+
+
+                        <p
+                            class="whitespace-pre-line break-words text-sm leading-6 ${
+                                isMine
+                                    ? 'text-white'
+                                    : 'text-[#55514b]'
+                            }"
+                        >
+                            ${escapeHtml(event.content)}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            /* Add message */
+
+            if (messagesList) {
+
+                messagesList.appendChild(wrapper);
+
+            } else {
+
+                messagesContainer.appendChild(wrapper);
+
+            }
+
+
+            /* Scroll to newest message */
+
+            messagesContainer.scrollTop =
+                messagesContainer.scrollHeight;
+
+        }
+    );
+
+
+    /* =========================================================
+       Listen for typing events
+       
+       Lawyer should react ONLY to client typing.
+    ========================================================= */
+
+    channel.listen(
+        '.user.typing',
+        (event) => {
+
+            console.log(
+                '======================================'
+            );
+
+            console.log(
+                'LAWYER RECEIVED TYPING EVENT:',
+                event
+            );
+
+            console.log(
+                'Typing role:',
+                event.role
+            );
+
+            console.log(
+                'Typing user ID:',
+                event.user_id
+            );
+
+            console.log(
+                'Typing case ID:',
+                event.case_id
+            );
+
+            console.log(
+                'Typing value:',
+                event.typing
+            );
+
+            console.log(
+                '======================================'
+            );
+
+
+            /* =================================================
+               Ignore our own typing event
+            ================================================= */
+
+            if (
+                Number(event.user_id) ===
+                Number(currentUserId)
+            ) {
+
+                console.log(
+                    'Ignoring own typing event.'
+                );
+
+                return;
+            }
+
+
+            /* =================================================
+               Only accept client typing
+            ================================================= */
+
+            if (event.role !== 'client') {
+
+                console.log(
+                    'Ignoring non-client typing event:',
+                    event.role
+                );
+
+                return;
+            }
+
+
+            /* =================================================
+               Make sure event belongs to this case
+            ================================================= */
+
+            if (
+                event.case_id &&
+                Number(event.case_id) !==
+                Number(caseId)
+            ) {
+
+                console.log(
+                    'Ignoring typing event from another case:',
+                    event.case_id
+                );
+
+                return;
+            }
+
+
+            /* =================================================
+               Client started typing
+            ================================================= */
+
+            if (event.typing === true) {
+
+                const name =
+                    event.user_name ?? 'Client';
+
+
+                console.log(
+                    'CLIENT IS TYPING:',
+                    name
+                );
+
+
+                showTypingIndicator(name);
+
+                return;
+            }
+
+
+            /* =================================================
+               Client stopped typing
+            ================================================= */
+
+            if (event.typing === false) {
+
+                console.log(
+                    'CLIENT STOPPED TYPING'
+                );
+
+
+                hideTypingIndicator();
+
+            }
+
+        }
+    );
 
 });
 

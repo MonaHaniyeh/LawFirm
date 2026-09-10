@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Lawyer;
 
+use App\Events\MessageSent;
+use App\Events\UserTyping;
 use App\Http\Controllers\Controller;
 use App\Models\CaseFile;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Events\MessageSent;
-use App\Events\UserTyping;
 
 class MessageController extends Controller
 {
@@ -54,29 +54,39 @@ class MessageController extends Controller
         );
     }
 
+
     /**
-     * Display the complete conversation.
+     * Display the complete conversation for a case.
      */
-    public function show(Message $message)
+    public function show(CaseFile $case)
     {
+        /** @var \App\Models\User $lawyer */
         $lawyer = Auth::user();
-
-        $case = $message->case;
-
-        if (!$case) {
-            abort(404, 'Case not found.');
-        }
 
         /*
         |--------------------------------------------------------------------------
         | Security
         |--------------------------------------------------------------------------
+        |
+        | A lawyer can only view conversations belonging
+        | to their own cases.
+        |
         */
 
         abort_unless(
             (int) $case->lawyer_id === (int) $lawyer->id,
             403
         );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Load client
+        |--------------------------------------------------------------------------
+        */
+
+        $case->load('client');
+
 
         /*
         |--------------------------------------------------------------------------
@@ -92,6 +102,7 @@ class MessageController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
+
         /*
         |--------------------------------------------------------------------------
         | Mark received messages as read
@@ -105,22 +116,33 @@ class MessageController extends Controller
                 'is_new' => false,
             ]);
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Show conversation + reply form
+        |--------------------------------------------------------------------------
+        */
+
         return view(
             'lawyer.messages.show',
             compact(
-                'message',
                 'case',
                 'messages'
             )
         );
     }
 
+
     /**
-     * Display the reply page.
+     * Send a reply to the client.
      */
-    public function replyForm(CaseFile $case)
-    {
+    public function reply(
+        Request $request,
+        CaseFile $case
+    ) {
+        /** @var \App\Models\User $lawyer */
         $lawyer = Auth::user();
+
 
         /*
         |--------------------------------------------------------------------------
@@ -133,64 +155,12 @@ class MessageController extends Controller
             403
         );
 
-        /*
-        |--------------------------------------------------------------------------
-        | Get client
-        |--------------------------------------------------------------------------
-        */
-
-        $case->load('client');
 
         /*
         |--------------------------------------------------------------------------
-        | Get previous messages
+        | Validate
         |--------------------------------------------------------------------------
         */
-
-        $messages = Message::with([
-            'sender',
-        ])
-            ->where('case_id', $case->id)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        return view(
-            'lawyer.messages.reply',
-            compact(
-                'case',
-                'messages'
-            )
-        );
-    }
-
-    /**
-     * Send a reply to the client.
-     */
-    public function reply(
-        Request $request,
-        CaseFile $case
-    ) {
-        $lawyer = Auth::user();
-
-        /*
-    |--------------------------------------------------------------------------
-    | Security
-    |--------------------------------------------------------------------------
-    |
-    | The lawyer can only reply to their own cases.
-    |
-    */
-
-        abort_unless(
-            (int) $case->lawyer_id === (int) $lawyer->id,
-            403
-        );
-
-        /*
-    |--------------------------------------------------------------------------
-    | Validate
-    |--------------------------------------------------------------------------
-    */
 
         $data = $request->validate([
             'content' => [
@@ -200,11 +170,27 @@ class MessageController extends Controller
             ],
         ]);
 
+
         /*
-    |--------------------------------------------------------------------------
-    | Create message
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Make sure a client exists
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$case->client_id) {
+            return back()
+                ->withErrors([
+                    'content' => 'This case does not have a client assigned.',
+                ])
+                ->withInput();
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create message
+        |--------------------------------------------------------------------------
+        */
 
         $message = Message::create([
             'case_id' => $case->id,
@@ -215,26 +201,40 @@ class MessageController extends Controller
             'is_new' => true,
         ]);
 
-        /*
-    |--------------------------------------------------------------------------
-    | Broadcast message
-    |--------------------------------------------------------------------------
-    */
-
-        $message->load('sender');
-
-        broadcast(new MessageSent($message))->toOthers();
 
         /*
-    |--------------------------------------------------------------------------
-    | Return to conversation
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Load relationships for broadcasting
+        |--------------------------------------------------------------------------
+        */
+
+        $message->load([
+            'sender',
+            'receiver',
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Broadcast message
+        |--------------------------------------------------------------------------
+        */
+
+        broadcast(
+            new MessageSent($message)
+        )->toOthers();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Return to the case conversation
+        |--------------------------------------------------------------------------
+        */
 
         return redirect()
             ->route(
                 'lawyer.messages.show',
-                $message
+                $case
             )
             ->with(
                 'status',
@@ -242,13 +242,25 @@ class MessageController extends Controller
             );
     }
 
+
+    /**
+     * Broadcast lawyer typing status.
+     */
     public function typing(Request $request)
     {
+        /** @var \App\Models\User $lawyer */
         $lawyer = Auth::user();
 
         $data = $request->validate([
-            'case_id' => ['required', 'integer'],
-            'typing' => ['required', 'boolean'],
+            'case_id' => [
+                'required',
+                'integer',
+                'exists:case_files,id',
+            ],
+            'typing' => [
+                'required',
+                'boolean',
+            ],
         ]);
 
         $case = CaseFile::findOrFail($data['case_id']);
