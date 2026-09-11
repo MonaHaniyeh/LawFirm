@@ -9,7 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserHasRole
 {
-    /** * Handle an incoming request. * * Usage: * * ->middleware('role:client') * * ->middleware('role:admin,accountant') * * Multiple roles are treated as "any of these roles". */ public function handle(Request $request, Closure $next, string ...$roles): Response
+    /** * Handle an incoming request. * * Usage: * * ->middleware('role:client') * * ->middleware('role:admin,accountant') * * Multiple roles are treated as "any of these roles". */
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     { /* |-------------------------------------------------------------------------- | CHECK AUTHENTICATION |-------------------------------------------------------------------------- | | If the user is not authenticated, show the custom 404 page. | HTTP status will still be 404. | */
         $user = $request->user();
         if (!$user) {
