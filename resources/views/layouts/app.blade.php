@@ -191,9 +191,9 @@
         .nav-link.active::before {
             content: "";
             position: absolute;
-            left: 6px;
-            top: 10px;
-            bottom: 10px;
+            left: 10px;
+            top: 24px;
+            bottom: 15px;
             width: 2px;
             background: var(--gold);
             border-radius: 999px;

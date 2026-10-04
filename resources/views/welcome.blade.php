@@ -6,32 +6,20 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>LAWFIRM — Legal Platform</title>
 
     {{-- Google Fonts --}}
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
 
     <style>
-
         /* =====================================================
            RESET
         ===================================================== */
@@ -85,17 +73,12 @@
             z-index: -5;
 
             filter:
-                brightness(.43)
-                saturate(.48)
-                contrast(1.08);
+                brightness(.43) saturate(.48) contrast(1.08);
 
             transform: scale(1.04);
 
             animation:
-                backgroundReveal
-                1.4s
-                ease-out
-                forwards;
+                backgroundReveal 1.4s ease-out forwards;
         }
 
         @keyframes backgroundReveal {
@@ -123,22 +106,18 @@
             z-index: -4;
 
             background:
-                linear-gradient(
-                    90deg,
+                linear-gradient(90deg,
                     rgba(7, 9, 10, .90) 0%,
                     rgba(7, 9, 10, .76) 27%,
                     rgba(7, 9, 10, .43) 54%,
                     rgba(7, 9, 10, .18) 78%,
-                    rgba(7, 9, 10, .35) 100%
-                ),
+                    rgba(7, 9, 10, .35) 100%),
 
-                linear-gradient(
-                    180deg,
+                linear-gradient(180deg,
                     rgba(7, 9, 10, .48) 0%,
                     transparent 35%,
                     transparent 65%,
-                    rgba(7, 9, 10, .65) 100%
-                );
+                    rgba(7, 9, 10, .65) 100%);
         }
 
 
@@ -160,12 +139,10 @@
             border-radius: 50%;
 
             background:
-                radial-gradient(
-                    circle,
+                radial-gradient(circle,
                     rgba(201, 164, 92, .15) 0%,
                     rgba(201, 164, 92, .05) 38%,
-                    transparent 72%
-                );
+                    transparent 72%);
 
             filter: blur(15px);
 
@@ -187,11 +164,7 @@
             z-index: 100;
 
             animation:
-                contentReveal
-                .9s
-                .15s
-                ease
-                both;
+                contentReveal .9s .15s ease both;
         }
 
         .top-signin {
@@ -310,11 +283,7 @@
             justify-content: flex-start;
 
             animation:
-                contentReveal
-                .9s
-                .15s
-                ease
-                both;
+                contentReveal .9s .15s ease both;
         }
 
         .brand {
@@ -347,8 +316,7 @@
             justify-content: center;
 
             border:
-                1px solid
-                rgba(201, 164, 92, .78);
+                1px solid rgba(201, 164, 92, .78);
 
             background:
                 rgba(15, 17, 18, .35);
@@ -426,11 +394,7 @@
             text-transform: uppercase;
 
             animation:
-                contentReveal
-                .9s
-                .25s
-                ease
-                both;
+                contentReveal .9s .25s ease both;
         }
 
         .kicker::before {
@@ -457,11 +421,9 @@
                 serif;
 
             font-size:
-                clamp(
-                    82px,
+                clamp(82px,
                     7.8vw,
-                    118px
-                );
+                    118px);
 
             font-weight: 500;
 
@@ -470,11 +432,7 @@
             letter-spacing: -.055em;
 
             animation:
-                titleReveal
-                1s
-                .3s
-                cubic-bezier(.2,.8,.2,1)
-                both;
+                titleReveal 1s .3s cubic-bezier(.2, .8, .2, 1) both;
         }
 
         .main-title span {
@@ -508,11 +466,7 @@
             letter-spacing: .01em;
 
             animation:
-                contentReveal
-                .9s
-                .48s
-                ease
-                both;
+                contentReveal .9s .48s ease both;
         }
 
 
@@ -529,19 +483,13 @@
             margin: 32px 0;
 
             background:
-                linear-gradient(
-                    90deg,
-                    rgba(201,164,92,.55),
-                    rgba(255,255,255,.18),
-                    transparent
-                );
+                linear-gradient(90deg,
+                    rgba(201, 164, 92, .55),
+                    rgba(255, 255, 255, .18),
+                    transparent);
 
             animation:
-                dividerReveal
-                .9s
-                .58s
-                ease
-                both;
+                dividerReveal .9s .58s ease both;
         }
 
 
@@ -559,11 +507,7 @@
             flex-wrap: wrap;
 
             animation:
-                contentReveal
-                .9s
-                .65s
-                ease
-                both;
+                contentReveal .9s .65s ease both;
         }
 
         .action {
@@ -605,14 +549,12 @@
             background: #c9a45c;
 
             border:
-                1px solid
-                #c9a45c;
+                1px solid #c9a45c;
 
             color: #111315;
 
             box-shadow:
-                0 12px 30px
-                rgba(0,0,0,.25);
+                0 12px 30px rgba(0, 0, 0, .25);
         }
 
         .action-primary:hover {
@@ -621,8 +563,7 @@
             border-color: #d8b56e;
 
             box-shadow:
-                0 16px 35px
-                rgba(0,0,0,.35);
+                0 16px 35px rgba(0, 0, 0, .35);
         }
 
 
@@ -632,11 +573,10 @@
 
         .action-secondary {
             background:
-                rgba(17,19,21,.18);
+                rgba(17, 19, 21, .18);
 
             border:
-                1px solid
-                rgba(243,240,233,.30);
+                1px solid rgba(243, 240, 233, .30);
 
             color: #f0ece4;
 
@@ -650,7 +590,7 @@
             color: #c9a45c;
 
             background:
-                rgba(17,19,21,.32);
+                rgba(17, 19, 21, .32);
         }
 
 
@@ -668,7 +608,7 @@
             margin-top: 24px;
 
             color:
-                rgba(243,240,233,.48);
+                rgba(243, 240, 233, .48);
 
             font-size: 9px;
 
@@ -677,11 +617,7 @@
             text-transform: uppercase;
 
             animation:
-                contentReveal
-                .9s
-                .75s
-                ease
-                both;
+                contentReveal .9s .75s ease both;
         }
 
         .security-dot {
@@ -693,8 +629,7 @@
             background: #c9a45c;
 
             box-shadow:
-                0 0 12px
-                rgba(201,164,92,.55);
+                0 0 12px rgba(201, 164, 92, .55);
 
             flex-shrink: 0;
         }
@@ -710,7 +645,7 @@
             align-items: center;
 
             color:
-                rgba(243,240,233,.40);
+                rgba(243, 240, 233, .40);
 
             font-size: 9px;
 
@@ -719,11 +654,7 @@
             text-transform: uppercase;
 
             animation:
-                contentReveal
-                .9s
-                .85s
-                ease
-                both;
+                contentReveal .9s .85s ease both;
         }
 
         .footer-line {
@@ -733,7 +664,7 @@
             margin: 0 18px;
 
             background:
-                rgba(243,240,233,.20);
+                rgba(243, 240, 233, .20);
         }
 
 
@@ -766,10 +697,8 @@
             z-index: 4;
 
             width:
-                min(
-                    820px,
-                    108%
-                );
+                min(820px,
+                    108%);
 
             height: auto;
 
@@ -780,22 +709,10 @@
             opacity: .99;
 
             filter:
-                drop-shadow(
-                    0 45px 55px
-                    rgba(0,0,0,.68)
-                )
-
-                drop-shadow(
-                    0 0 35px
-                    rgba(201,164,92,.13)
-                );
+                drop-shadow(0 45px 55px rgba(0, 0, 0, .68)) drop-shadow(0 0 35px rgba(201, 164, 92, .13));
 
             animation:
-                objectReveal
-                1.2s
-                .15s
-                cubic-bezier(.2,.8,.2,1)
-                both;
+                objectReveal 1.2s .15s cubic-bezier(.2, .8, .2, 1) both;
         }
 
 
@@ -807,20 +724,15 @@
             position: absolute;
 
             width:
-                min(
-                    720px,
-                    95%
-                );
+                min(720px,
+                    95%);
 
             height:
-                min(
-                    720px,
-                    88%
-                );
+                min(720px,
+                    88%);
 
             border:
-                1px solid
-                rgba(201,164,92,.15);
+                1px solid rgba(201, 164, 92, .15);
 
             transform:
                 rotate(3deg);
@@ -830,11 +742,7 @@
             opacity: .7;
 
             animation:
-                frameReveal
-                1.2s
-                .35s
-                ease
-                both;
+                frameReveal 1.2s .35s ease both;
         }
 
         .object-frame::before {
@@ -845,8 +753,7 @@
             inset: 17px;
 
             border:
-                1px solid
-                rgba(243,240,233,.08);
+                1px solid rgba(243, 240, 233, .08);
         }
 
 
@@ -861,7 +768,7 @@
             right: 20px;
 
             color:
-                rgba(243,240,233,.30);
+                rgba(243, 240, 233, .30);
 
             font-family:
                 'Cormorant Garamond',
@@ -888,7 +795,7 @@
             gap: 13px;
 
             color:
-                rgba(243,240,233,.50);
+                rgba(243, 240, 233, .50);
 
             font-size: 9px;
 
@@ -935,16 +842,14 @@
                 opacity: 0;
 
                 transform:
-                    translateX(-35px)
-                    translateY(12px);
+                    translateX(-35px) translateY(12px);
             }
 
             to {
                 opacity: 1;
 
                 transform:
-                    translateX(0)
-                    translateY(0);
+                    translateX(0) translateY(0);
             }
 
         }
@@ -979,16 +884,14 @@
                 opacity: 0;
 
                 transform:
-                    translateX(70px)
-                    scale(.88);
+                    translateX(70px) scale(.88);
             }
 
             to {
                 opacity: .99;
 
                 transform:
-                    translateX(0)
-                    scale(1);
+                    translateX(0) scale(1);
             }
 
         }
@@ -999,16 +902,14 @@
                 opacity: 0;
 
                 transform:
-                    rotate(3deg)
-                    scale(.90);
+                    rotate(3deg) scale(.90);
             }
 
             to {
                 opacity: .7;
 
                 transform:
-                    rotate(3deg)
-                    scale(1);
+                    rotate(3deg) scale(1);
             }
 
         }
@@ -1038,11 +939,9 @@
 
             .main-title {
                 font-size:
-                    clamp(
-                        70px,
+                    clamp(70px,
                         8vw,
-                        96px
-                    );
+                        96px);
             }
 
             .description {
@@ -1075,9 +974,7 @@
 
             .background-image {
                 filter:
-                    brightness(.30)
-                    saturate(.45)
-                    contrast(1.05);
+                    brightness(.30) saturate(.45) contrast(1.05);
             }
 
             .page-content {
@@ -1145,11 +1042,9 @@
 
             .main-title {
                 font-size:
-                    clamp(
-                        68px,
+                    clamp(68px,
                         18vw,
-                        90px
-                    );
+                        90px);
             }
 
             .description {
@@ -1227,11 +1122,9 @@
 
             .main-title {
                 font-size:
-                    clamp(
-                        58px,
+                    clamp(58px,
                         18vw,
-                        76px
-                    );
+                        76px);
             }
 
             .description {
@@ -1378,11 +1271,9 @@
 
             .main-title {
                 font-size:
-                    clamp(
-                        68px,
+                    clamp(68px,
                         6.5vw,
-                        90px
-                    );
+                        90px);
             }
 
             .description {
@@ -1414,12 +1305,7 @@
            TABLET PORTRAIT
         ===================================================== */
 
-        @media
-        (min-width: 761px)
-        and
-        (max-width: 900px)
-        and
-        (orientation: portrait) {
+        @media (min-width: 761px) and (max-width: 900px) and (orientation: portrait) {
 
             .page-content {
                 padding: 30px 35px;
@@ -1435,11 +1321,9 @@
 
             .main-title {
                 font-size:
-                    clamp(
-                        62px,
+                    clamp(62px,
                         9vw,
-                        82px
-                    );
+                        82px);
             }
 
             .description {
@@ -1463,12 +1347,7 @@
            LANDSCAPE PHONES
         ===================================================== */
 
-        @media
-        (max-width: 760px)
-        and
-        (orientation: landscape)
-        and
-        (max-height: 550px) {
+        @media (max-width: 760px) and (orientation: landscape) and (max-height: 550px) {
 
             .page-content {
                 padding: 18px 25px;
@@ -1549,7 +1428,6 @@
             }
 
         }
-
     </style>
 
 </head>
@@ -1557,263 +1435,232 @@
 
 <body>
 
-<div
-    class="welcome-page"
-    id="welcomePage"
->
+    <div class="welcome-page" id="welcomePage">
 
-    {{-- =====================================================
+        {{-- =====================================================
          FULL BALANZA BACKGROUND
     ====================================================== --}}
 
-    <img
-        src="{{ asset('storage/backgrounds/balanza.jpeg') }}"
-        alt=""
-        class="background-image"
-    >
+        <img src="{{ asset('storage/backgrounds/balanza.jpeg') }}" alt="" class="background-image">
 
 
-    {{-- Background Overlay --}}
+        {{-- Background Overlay --}}
 
-    <div class="background-overlay"></div>
+        <div class="background-overlay"></div>
 
 
-    {{-- Gold Glow --}}
+        {{-- Gold Glow --}}
 
-    <div class="gold-glow"></div>
-
-
-    {{-- =====================================================
-         TOP RIGHT SIGN IN
-    ====================================================== --}}
-
-    <nav class="top-navigation">
-
-        <a
-            href="{{ route('login') }}"
-            class="top-signin"
-        >
-
-            <span>
-                Sign In
-            </span>
-
-            <span class="top-arrow">
-                →
-            </span>
-
-        </a>
-
-    </nav>
-
-
-    {{-- =====================================================
-         MAIN CONTENT
-    ====================================================== --}}
-
-    <div class="page-content">
-
-
-        {{-- =================================================
-             LEFT SIDE
-        ================================================== --}}
-
-        <section class="brand-section">
-
-
-            {{-- =================================================
-                 BRAND
-            ================================================== --}}
-
-            <header class="brand-header">
-
-                <a
-                    href="{{ route('welcome') }}"
-                    class="brand"
-                >
-
-                    {{-- Brand Icon --}}
-
-                    <div class="brand-icon">
-
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="1.3"
-                                d="M12 3v2m0 0v16m-7-9h14M5 12l-3 6h6l-3-6zm14 0l-3 6h6l-3-6zM8 21h8"
-                            />
-
-                        </svg>
-
-                    </div>
-
-
-                    {{-- Brand Name --}}
-
-                    <div class="brand-name">
-                        LAWFIRM
-                    </div>
-
-                </a>
-
-            </header>
-
-
-            {{-- =================================================
-                 MAIN CONTENT
-            ================================================== --}}
-
-            <main class="content">
-
-
-                {{-- Kicker --}}
-
-                <div class="kicker">
-                    Private Legal Platform
-                </div>
-
-
-                {{-- Main Title --}}
-
-                <h1 class="main-title">
-
-                    Law
-
-                    <span>
-                        with purpose.
-                    </span>
-
-                </h1>
-
-
-                {{-- Description --}}
-
-                <p class="description">
-
-                    A private digital environment designed to bring
-                    legal services, case management, documents,
-                    appointments, and communication together.
-
-                </p>
-
-
-                {{-- Divider --}}
-
-                <div class="divider"></div>
-
-
-                {{-- =================================================
-                     BUTTONS
-                ================================================== --}}
-
-                <div class="actions">
-
-
-                    {{-- Create Account --}}
-
-                    <a
-                        href="{{ route('register') }}"
-                        class="action action-primary"
-                    >
-
-                        Create Account
-
-                    </a>
-
-
-                    {{-- Sign In --}}
-
-                    <a
-                        href="{{ route('login') }}"
-                        class="action action-secondary"
-                    >
-
-                        Sign In
-
-                    </a>
-
-
-                </div>
-
-
-                {{-- Security --}}
-
-                <div class="security">
-
-                    <span class="security-dot"></span>
-
-                    Secure · Private · Confidential
-
-                </div>
-
-
-            </main>
-
-
-            {{-- =================================================
-                 FOOTER
-            ================================================== --}}
-
-            <footer class="brand-footer">
-
-                <span>
-                    Established 2026
-                </span>
-
-                <span class="footer-line"></span>
-
-                <span>
-                    Legal Platform
-                </span>
-
-            </footer>
-
-
-        </section>
+        <div class="gold-glow"></div>
 
 
         {{-- =====================================================
+         TOP RIGHT SIGN IN
+    ====================================================== --}}
+
+        <nav class="top-navigation">
+
+            <a href="{{ route('login') }}" class="top-signin">
+
+                <span>
+                    Sign In
+                </span>
+
+                <span class="top-arrow">
+                    →
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        {{-- =====================================================
+         MAIN CONTENT
+    ====================================================== --}}
+
+        <div class="page-content">
+
+
+            {{-- =================================================
+             LEFT SIDE
+        ================================================== --}}
+
+            <section class="brand-section">
+
+
+                {{-- =================================================
+                 BRAND
+            ================================================== --}}
+
+                <header class="brand-header">
+
+                    <a href="{{ route('welcome') }}" class="brand">
+
+                        {{-- Brand Icon --}}
+
+                        <div class="brand-icon">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"
+                                    d="M12 3v2m0 0v16m-7-9h14M5 12l-3 6h6l-3-6zm14 0l-3 6h6l-3-6zM8 21h8" />
+
+                            </svg>
+
+                        </div>
+
+
+                        {{-- Brand Name --}}
+
+                        <div class="brand-name">
+                            LAWFIRM
+                        </div>
+
+                    </a>
+
+                </header>
+
+
+                {{-- =================================================
+                 MAIN CONTENT
+            ================================================== --}}
+
+                <main class="content">
+
+
+                    {{-- Kicker --}}
+
+                    <div class="kicker">
+                        Private Legal Platform
+                    </div>
+
+
+                    {{-- Main Title --}}
+
+                    <h1 class="main-title">
+
+                        Law
+
+                        <span>
+                            with purpose.
+                        </span>
+
+                    </h1>
+
+
+                    {{-- Description --}}
+
+                    <p class="description">
+
+                        A private digital environment designed to bring
+                        legal services, case management, documents,
+                        appointments, and communication together.
+
+                    </p>
+
+
+                    {{-- Divider --}}
+
+                    <div class="divider"></div>
+
+
+                    {{-- =================================================
+                     BUTTONS
+                ================================================== --}}
+
+                    <div class="actions">
+
+
+                        {{-- Create Account --}}
+
+                        <a href="{{ route('register') }}" class="action action-primary">
+
+                            Create Account
+
+                        </a>
+
+
+                        {{-- Sign In --}}
+
+                        <a href="{{ route('login') }}" class="action action-secondary">
+
+                            Sign In
+
+                        </a>
+
+
+                    </div>
+
+
+                    {{-- Security --}}
+
+                    <div class="security">
+
+                        <span class="security-dot"></span>
+
+                        Secure · Private · Confidential
+
+                    </div>
+
+
+                </main>
+
+
+                {{-- =================================================
+                 FOOTER
+            ================================================== --}}
+
+                <footer class="brand-footer">
+
+                    <span>
+                        Established 2026
+                    </span>
+
+                    <span class="footer-line"></span>
+
+                    <span>
+                        Legal Platform
+                    </span>
+
+                </footer>
+
+
+            </section>
+
+
+            {{-- =====================================================
              RIGHT — JUSTICE OBJECT
         ====================================================== --}}
 
-        <section class="visual-section">
+            <section class="visual-section">
 
 
-            {{-- Decorative Frame --}}
+                {{-- Decorative Frame --}}
 
-            <div class="object-frame"></div>
+                <div class="object-frame"></div>
 
 
-            {{-- Justice Object --}}
+                {{-- Justice Object --}}
 
-            <img
-                src="{{ asset('storage/objects/object.png') }}"
-                alt="Justice Object"
-                class="justice-object"
-            >
+                <img src="{{ asset('storage/objects/object.png') }}" alt="Justice Object" class="justice-object">
 
 
 
-            {{-- Object Label --}}
+                {{-- Object Label --}}
 
-            <div class="visual-label">
-                Law · Justice · Integrity
-            </div>
+                <div class="visual-label">
+                    Law · Justice · Integrity
+                </div>
 
 
-        </section>
+            </section>
 
+
+        </div>
 
     </div>
-
-</div>
 
 </body>
 
